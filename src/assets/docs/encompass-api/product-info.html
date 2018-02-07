@@ -1,0 +1,166 @@
+<h1>Get Product Information Command</h1>
+<div class="rule"></div>
+<p>
+    For the Product Editor we will need a count of inventoried products, non inventoried products and a total product count.
+    You can't do this with a table view, so we will need to use a
+    <b>Fusion Report</b> to get this information.
+</p>
+
+<h2>Create the Product Information Report</h2>
+<p>
+    In your Encompass test site, navigate to a new
+    <b>Fusion Report</b>. Enter Fusion Report in the search field.
+</p>
+<p>
+    <div class="screen-title">
+        FusionEdit.aspx
+    </div>
+    <div class="screen">
+        <img src="/assets/docs/encompass-api/fusion-report.png" width="95%">
+    </div>
+</p>
+<p>
+    In the
+    <b>Tables</b> section, click
+    <b>Add Table</b> ->
+    <b>Add Table</b>.
+</p>
+<p>
+    Enter
+    <b>Products</b> in the
+    <b>Table</b> field. Then click
+    <b>Select</b>.
+</p>
+<p>
+    Now click
+    <b>Add Table</b> ->
+    <b>Add Related Table</b>.
+</p>
+<p>
+    Check
+    <b>Product Types</b>, and then click
+    <b>Select</b>.
+</p>
+<p>
+    Click on the
+    <b>Data</b> tab.
+</p>
+<p>
+    In the
+    <b>Group By</b> section under
+    <b>Fields</b> enter
+    <b>ProductTypes - Track Inventory</b> in the first position.
+</p>
+<p>
+    In the
+    <b>Values</b> section enter
+    <b>Products - Product ID</b> in the first position.
+</p>
+<p>
+    Change the value name from
+    <b>Product ID</b> to
+    <b>Product Count</b>.
+</p>
+<p>
+    Change the aggregate to
+    <b>Count</b>. This is the drop down after the field.
+</p>
+<p>
+    Click
+    <b>Create Report</b>.
+</p>
+
+<h2>Save the Fusion Report</h2>
+<p>
+    You should now have a simple report that counts products by the track inventory flag.
+</p>
+<p>
+    <div class="screen-title">
+        FusionView.aspx
+    </div>
+    <div class="screen">
+        <img src="/assets/docs/encompass-api/product-info-report.png">
+    </div>
+</p>
+<p>
+    Click
+    <b>Save Report As</b>.
+</p>
+<p>
+    <ul>
+        <li>
+            Enter
+            <b>Product Counts</b> in the
+            <b>Report Name</b> field.
+            <br>
+            <br>
+        </li>
+        <li>
+            Set the
+            <b>Format</b> to
+            <b>JSON</b>.
+            <br>
+            <br>
+        </li>
+    </ul>
+</p>
+<p>
+    Click
+    <b>Save</b>.
+</p>
+
+<h2>Create the productInfo Command</h2>
+<p>
+    Now that your report is saved, you now have access to the
+    <b>Share</b> menu.
+</p>
+<p class="note">
+    For this example, we will use the automated
+    <b>Share</b> system to create the API Command. The
+    <b>Share</b> system is available to tables too, but practice making commands manually helps us understand how the API works.
+</p>
+<p>
+    Click
+    <b>Share</b> ->
+    <b>API Command</b>.
+</p>
+<p>
+    <ul>
+        <li>
+            Enter
+            <b>ProductInfo</b> in the
+            <b>Command Name</b> field.
+            <br>
+            <br>
+        </li>
+        <li>
+            Set the
+            <b>Publisher</b> field to your publisher name.
+        </li>
+        <li>
+            Change the
+            <b>Page</b> field from
+            <b>FusionView.aspx?ReportID=1234</b> to
+            <b>FusionView.aspx?ReportID=1234&Format=JSON</b>
+            <br>Remember we need to add Format=JSON to your API Commands.
+            <br>
+            <br>
+        </li>
+    </ul>
+</p>
+<p>
+    Click
+    <b>Save</b>
+</p>
+
+<h2>What's Next?</h2>
+<p>
+    You're almost done! You have created a set of API Commands that will provide data for the Product Editor tutorial. Now all you
+    have to do is install the commands on the test site.
+</p>
+<p class="note">
+    <span class="next-step">Next Step</span>
+    <br>
+    <br>Almost done. Continue with
+    <a href="/docs/encompass-api/install-command">Installing Commands</a>.
+</p>

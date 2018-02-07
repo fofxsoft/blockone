@@ -1,0 +1,245 @@
+<h1>Update Product Command</h1>
+<div class="rule"></div>
+<p>
+    You will need to create API Commands that update data in Encompass. Encompass uses Import Routines for this.
+</p>
+
+<h2>Create Sample Data for Import Mapping</h2>
+<p>
+    You can create the import fields manually, however for this tutorial we will use JSON file with example data in it.
+</p>
+<p>
+    In your IDE create a file and name it
+    <b>update-product-mapping.json</b>, and enter the JSON below.
+</p>
+<p>
+    <div class="code-title">
+        update-product-mapping.json
+    </div>
+    <pre class="code">{
+    &quot;ProductID&quot;: <span style="color: #a31515">&quot;1234&quot;</span>,
+    &quot;ProductName&quot;: <span style="color: #a31515">&quot;Product Name&quot;</span>,
+    &quot;Supplier&quot;: <span style="color: #a31515">&quot;Supplier&quot;</span>,
+    &quot;Segment&quot;: <span style="color: #a31515">&quot;Segment&quot;</span>,
+    &quot;Price&quot;: <span style="color: #a31515">&quot;0.00&quot;</span>,
+    &quot;CasePrice&quot;: <span style="color: #a31515">&quot;0.00&quot;</span>,
+    &quot;Brand&quot;: <span style="color: #a31515">&quot;Brand&quot;</span>,
+    &quot;ProductType&quot;: <span style="color: #a31515">&quot;ProductType&quot;</span>,
+    &quot;Package&quot;: <span style="color: #a31515">&quot;Package&quot;</span>,
+    &quot;CommissionGroup&quot;: <span style="color: #a31515">&quot;CommissionGroup&quot;</span>,
+    &quot;SupplierProductNum&quot;: <span style="color: #a31515">&quot;SupplierProductNum&quot;</span>,
+    &quot;CaseUPC&quot;: <span style="color: #a31515">&quot;000000000000&quot;</span>,
+    &quot;CarrierUPC&quot;: <span style="color: #a31515">&quot;000000000000&quot;</span>,
+    &quot;UnitUPC&quot;: <span style="color: #a31515">&quot;000000000000&quot;</span>
+}</pre>
+</p>
+<p>
+    Save changes.
+</p>
+<p class="note">
+    Be sure to use a ProductID that is not in the Products table.
+</p>
+
+<h2>Create the Update Product Import Routine</h2>
+<p>
+    Navigate to the
+    <b>Import Routines</b> table.
+</p>
+<p>
+    Click on the
+    <b>Add Import Routines</b> button.
+</p>
+<p>
+    <div class="screen-title">
+        TableView.aspx?Action=Add&TableEdit=ImportRoutines
+    </div>
+    <div class="screen" style="background: #ededed;">
+        <img src="/assets/docs/encompass-api/add-import-routine.png">
+    </div>
+</p>
+<p>
+    <ul>
+        <li>
+            Set the
+            <b>Import Type</b> to
+            <b>Table Import</b>.
+            <br>
+            <br>
+        </li>
+        <li>
+            Enter
+            <b>Update Product</b> in the
+            <b>Import Routine</b> field.
+            <br>
+            <br>
+        </li>
+        <li>
+            Set the
+            <b>EDBL Source</b> to the location you are working with.
+        </li>
+    </ul>
+</p>
+<p class="note">
+    The
+    <b>EDBL Source</b> field is important specific import routines that depend on a location with in Encompass. For the purposes
+    of this tutorial, we will not be using this.
+</p>
+<p>
+    Click
+    <b>Add Record</b>.
+</p>
+<p>
+    <div class="screen-title">
+        TableView.aspx?Action=Add&TableEdit=ImportRoutines
+    </div>
+    <div class="screen" style="background: #ededed;">
+        <img src="/assets/docs/encompass-api/import-routine.png">
+    </div>
+</p>
+
+<h2>Setup the Import Routine</h2>
+<p>
+    Now that you have an Import Routine. Click on the
+    <b>Settings</b> button (Icon With Sliders).
+</p>
+<p>
+    <div class="screen-title">
+        TableImportEDBL.aspx?ImportRoutineID=4321&Action=EditImportRoutineProperties
+    </div>
+    <div class="screen" style="background: #ededed;">
+        <img src="/assets/docs/encompass-api/edit-import-routine.png">
+    </div>
+</p>
+<p>
+    <ul>
+        <li>
+            Set the
+            <b>Destination Table</b> to
+            <b>Products</b>.
+            <br>
+            <br>
+        </li>
+        <li>
+            Set the
+            <b>Import Action</b> to
+            <b>Update Only</b>.
+            <br>
+        </li>
+    </ul>
+</p>
+<p class="note">
+    The
+    <b>Import Action</b> allows you to restrict what an import routine can do. Since your app will only update products, we
+    will use
+    <b>Import Only</b> for this tutorial.
+</p>
+<p>
+    Click on the
+    <b>Use Local File</b> button.
+</p>
+<p>
+    Set your file extention filter to
+    <b>All Files</b>. And select the
+    <b>update-product-mapping.json</b> file.
+</p>
+<p>
+    The file will upload, now click
+    <b>Save Changes</b>
+</p>
+
+<h2>Map Import Routine Fields</h2>
+<p>
+    Import Routines need a field mapping to work. This tells the import routine about each field in you JSON data.
+</p>
+<p>
+    <div class="screen-title">
+        TableImportEDBL.aspx?ImportRoutineID=4321&Action=SingleTableMapFields
+    </div>
+    <div class="screen" style="background: #ededed;">
+        <img src="/assets/docs/encompass-api/map-fields.png">
+    </div>
+</p>
+<p>
+    The auto mapping logic did a pretty good job, however it missed two fields. This is intended because Supplier and Segment
+    actually come from different tables.
+</p>
+<p class="note">
+    Encompass has what is known as Virtual Fields. These are fields that display on the table, but are actually one or more tables
+    away. These represent automatic inner joins in the databse. You will not be able to edit these fields directly, you will
+    have to create another import routine for the joined tables. For this tutorial we will not be updating these fields.
+</p>
+<p>
+    Note the
+    <b>Link On</b> checbox. This is automatically placed on the
+    <b>ProductID</b> field. This represents the key field. Some tables have multiple keys, and secondary keys. The Products
+    table only has the ID field.
+</p>
+<p>
+    We are done here click
+    <b>Save Changes</b>
+</p>
+
+<h2>Cleaning Up</h2>
+<p>
+    <div class="screen-title">
+        TableImportEDBL.aspx?ImportRoutineID=4321&Action=DisplayTasks
+    </div>
+    <div class="screen" style="background: #ededed;">
+        <img src="/assets/docs/encompass-api/import-tasks.png" width="95%">
+    </div>
+</p>
+<p>
+    Since you used an example file, you do not want this
+    <b>Import Task</b> to run. You will need to delete this. Go ahead and cliek the
+    <b>Delete</b> button. Verify that the
+    <b>Source</b> is
+    <b>update-product-mapping...json</b>.
+</p>
+
+<h2>Create the UpdateProduct Command</h2>
+<p>
+    Import Routines support API Commands directly. They accept POST for a file or raw data.
+</p>
+<p class="note">
+    You can create Import Routine commands manually like you have so far, however, this is a bit more complicated, so using the
+    built in system is much easier.
+</p>
+<p>
+    Click
+    <b>Add API Command</b>.
+</p>
+<p>
+    <ul>
+        <li>
+            Enter
+            <b>UpdateProduct</b> in the
+            <b>Command Name</b> field.
+            <br>
+            <br>
+        </li>
+        <li>
+            Set the
+            <b>Publisher</b> field to your publisher name.
+        </li>
+    </ul>
+</p>
+<p>
+    Click
+    <b>Save</b>
+</p>
+<p class="note">
+    Use the defaults for the
+    <b>Request Parameters</b> and
+    <b>Page</b>. These are needed so you can POST data to the Import Routine.
+</p>
+
+<h2>What's Next?</h2>
+<p>
+    WOW! Great job! You now can read and write to the Products table, with API Commands.
+</p>
+<p class="note">
+    <span class="next-step">Next Step</span>
+    <br>
+    <br>Now, since you app will show some information about products, let's continue with the
+    <a href="/docs/encompass-api/product-info">GetProductInfo Command</a>.
+</p>

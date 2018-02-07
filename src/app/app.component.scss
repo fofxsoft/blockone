@@ -1,0 +1,50 @@
+@import '../../node_modules/@angular/material/_theming.scss';
+
+@include mat-core();
+
+.nav {
+    @extend .mat-elevation-z6;
+
+    width: 100%;
+    height: 56px;
+    position: fixed;
+    background-color: #000;
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHhtbDpzcGFjZT0ncHJlc2VydmUnIHdpZHRoPScwLjE5OWluJyBoZWlnaHQ9JzAuMTE0aW4nIHZlcnNpb249JzEuMScgc3R5bGU9J3NoYXBlLXJlbmRlcmluZzpnZW9tZXRyaWNQcmVjaXNpb247IHRleHQtcmVuZGVyaW5nOmdlb21ldHJpY1ByZWNpc2lvbjsgaW1hZ2UtcmVuZGVyaW5nOm9wdGltaXplUXVhbGl0eTsgZmlsbC1ydWxlOmV2ZW5vZGQ7IGNsaXAtcnVsZTpldmVub2RkJyB2aWV3Qm94PScwIDAgMTk5IDExNCcgeG1sbnM6eGxpbms9J2h0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsnPjxnPjxwYXRoIGZpbGw9JyMxYTFhMWEnIGQ9J00xMDAgNjFsLTkyIDUzIDE4MyAwIC05MSAtNTMgMCAwem05OSAtNTdsLTggNCAtODUgNTAgMCAwIDAgMCA4NSA0OSA4IDQgMCAtMTA3em0tMTkzIC00bDk0IDU0IDAgMCA5MSAtNTMgMiAtMSAtMTg3IDB6bS02IDExMWwwIDAgOTMgLTUzIC05MyAtNTQgMCAwIDAgMTA3em02IC0xMTFsMCAwIDAgMHonIC8+PC9nPjwvc3ZnPg==");
+    z-index: 2;
+
+    button {
+        border: 0 none;
+        background: transparent;
+        color: #fff;
+        cursor: pointer;
+
+        &:focus {
+            outline: 0 none;
+        }
+    }
+
+    .logo {
+        height: 26px;
+        margin: 14px 0 0 14px;
+    }
+
+    &.mat-toolbar-multiple-rows {
+        min-height: 56px;
+    }
+
+    .mat-toolbar-row, .mat-toolbar-single-row {
+        height: 56px;
+    }
+
+    .fill-space {
+        flex: 1 1 auto;
+    }
+
+    a {
+        color: #a0a0a0;
+    }
+
+    .active {
+        color: #fff;
+    }
+}

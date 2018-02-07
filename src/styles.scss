@@ -1,0 +1,226 @@
+@import "../node_modules/@angular/material/_theming.scss";
+
+@include mat-core;
+
+$mat-osiris-primary: (50: #eaeaea, 100: #cbcbcb, 200: #a9a9a9, 300: #868686, 400: #6c6c6c, 500: #525252, 600: #4b4b4b, 700: #414141, 800: #383838, 900: #282828, A100: #a3d48e, A200: #74d04b, A400: #60c732, A700: #3eae0d, contrast: (50: #000000, 100: #000000, 200: #000000, 300: #000000, 400: #ffffff, 500: #ffffff, 600: #ffffff, 700: #ffffff, 800: #ffffff, 900: #ffffff, A100: #000000, A200: #000000, A400: #ffffff, A700: #ffffff));
+
+$mat-osiris-secondary: (50: #eafbe2, 100: #cbf4b6, 200: #a9ed85, 300: #86e654, 400: #6ce030, 500: #28c403, 600: #28c403, 700: #28c403, 800: #28c403, 900: #28c403, A100: #efffec, A200: #c3ffb9, A400: #97ff86, A700: #81ff6d, contrast: (50: #000000, 100: #000000, 200: #000000, 300: #000000, 400: #ffffff, 500: #ffffff, 600: #ffffff, 700: #ffffff, 800: #ffffff, 900: #ffffff, A100: #000000, A200: #000000, A400: #ffffff, A700: #ffffff));
+
+$mat-osiris-warn: (50: #f6e1e1, 100: #e9b5b5, 200: #db8484, 300: #cc5252, 400: #c12d2d, 500: #b60808, 600: #af0707, 700: #a60606, 800: #9e0404, 900: #8e0202, A100: #ffbaba, A200: #ff8787, A400: #ff5454, A700: #ff3b3b, contrast: (50: #000000, 100: #000000, 200: #000000, 300: #ffffff, 400: #ffffff, 500: #ffffff, 600: #ffffff, 700: #ffffff, 800: #ffffff, 900: #ffffff, A100: #000000, A200: #000000, A400: #000000, A700: #ffffff));
+
+$osiris-app-primary: mat-palette($mat-osiris-primary);
+$osiris-app-accent: mat-palette($mat-osiris-secondary);
+$osiris-app-warn: mat-palette($mat-osiris-warn);
+$osiris-app-theme: mat-light-theme($osiris-app-primary, $osiris-app-accent, $osiris-app-warn);
+
+@include angular-material-theme($osiris-app-theme);
+
+html, body {
+    font-family: Roboto,Helvetica Neue Light,Helvetica Neue,Helvetica,Arial,Lucida Grande,sans-serif;
+    margin: 0;
+    height: 100%;
+}
+
+a {
+    color: #425ff4;
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
+
+    &:active {
+        color: #425ff4;
+    }
+
+    &:visited {
+        color: #425ff4;
+    }
+}
+
+.layout {
+    height: 100%;
+    z-index: 1;
+    border-top: 56px transparent solid;
+    box-sizing: border-box;
+}
+
+.menu {
+    @extend .mat-elevation-z6;
+
+    width: 250px;
+    min-width: 250px;
+
+    .docs-menu {
+        mat-expansion-panel {
+            @extend .mat-elevation-z0;
+
+            margin: 0;
+            border-bottom: 1px rgba(0, 0, 0, 0.1) solid;
+
+            mat-expansion-panel-header {
+                cursor: pointer !important;
+            }
+
+            mat-panel-title {
+                color: rgba(0, 0, 0, 0.87) !important;
+                outline: 0 none;
+
+                &:active {
+                    outline: 0 none;
+                }
+            }
+
+            .active {
+                color: #1bad22 !important;
+            }
+
+            ul {
+                list-style-type: none;
+                margin: 0;
+                padding: 0;
+
+                li {
+                    color: rgba(0, 0, 0, 0.54);
+                    margin: 5px 0 5px 20px;
+                    padding: 0;
+                    cursor: pointer;
+
+                    &:hover {
+                        color: #000;
+                    }
+                }
+
+                .active {
+                    color: rgba(0, 0, 0, 0.54) !important;
+                    font-weight: bold;
+                }
+            }
+        }
+    }
+}
+
+main {
+    width: 100%;
+}
+
+.document {
+    width: 80%;
+    margin: 40px auto;
+    color: rgba(0, 0, 0, 0.75);
+
+    p {
+        font-size: 14px;
+    }
+
+    ul {
+        li {
+            font-size: 14px;
+        }
+    }
+
+    h1 {
+        font-size: 1.8em;
+        font-weight: normal;
+        color: rgba(0, 0, 0, 0.95);
+        margin: 3px 0;
+    }
+
+    h2 {
+        font-size: 1.2em;
+        margin-top: 50px;
+        margin-bottom: 3px;
+        font-weight: normal;
+        color: rgba(0, 0, 0, 0.85);
+    }
+
+    .next-step {
+        font-size: 1.2em;
+        margin-top: 50px;
+        margin-bottom: 3px;
+        font-weight: normal;
+        color: rgba(0, 0, 0, 0.85);
+    }
+
+    .rule {
+        height: 2px;
+        width: 100%;
+        background: #1bad22;
+        background: -moz-linear-gradient(left, #1bad22 0%, #1bad22 25%, #f06d30 25%, #f06d30 50%, #a14a83 50%, #a14a83 75%, #10b0c9 75%, #10b0c9 100%);
+        background: -webkit-linear-gradient(left, #1bad22 0%, #1bad22 25%, #f06d30 25%, #f06d30 50%, #a14a83 50%, #a14a83 75%, #10b0c9 75%, #10b0c9 100%);
+        background: linear-gradient(to right, #1bad22 0%, #1bad22 25%, #f06d30 25%, #f06d30 50%, #a14a83 50%, #a14a83 75%, #10b0c9 75%, #10b0c9 100%);
+    }
+
+    .note {
+        font-size: 14px;
+        padding: 20px;
+        background: #eafbe2;
+        border-left: 7px #1bad22 solid;
+    }
+
+    .terminal {
+        font-family: Droid Sans Mono,monospace;
+        font-size: 14px;
+        padding: 20px;
+        background: #000;
+        color: #fff;
+        border-left: 7px #1bad22 solid;
+    }
+
+    .screen {
+        background: #fff;
+        padding: 30px;
+        text-align: center;
+        border-right: 1px rgba(0, 0, 0, 0.1) solid;
+        border-bottom: 1px rgba(0, 0, 0, 0.1) solid;
+        border-left: 1px rgba(0, 0, 0, 0.1) solid;
+    }
+
+    .screen-title {
+        padding: 10px 20px;
+        font-size: 14px;
+        background: #1bad22;
+        color: #fff;
+        margin: 0;
+    }
+
+    .button {
+        @extend .mat-raised-button;
+
+        @extend .mat-accent;
+
+        @extend .mat-elevation-z2;
+
+        padding: 10px 20px;
+        text-decoration: none;
+        border-radius: 2px;
+        display: inline-block;
+    }
+
+    .big-button {
+        @extend .button;
+
+        padding: 20px 50px;
+        font-size: 17px;
+    }
+
+    .code {
+        max-height: 450px;
+        overflow: auto;
+        font-size: 14px;
+        background: #fff;
+        padding: 20px;
+        border-right: 1px rgba(0, 0, 0, 0.1) solid;
+        border-bottom: 1px rgba(0, 0, 0, 0.1) solid;
+        border-left: 1px rgba(0, 0, 0, 0.1) solid;
+        margin-top: 0;
+    }
+
+    .code-title {
+        padding: 10px 20px;
+        font-size: 14px;
+        background: #1bad22;
+        color: #fff;
+        margin: 0;
+    }
+}

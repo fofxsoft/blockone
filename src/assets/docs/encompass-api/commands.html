@@ -1,0 +1,115 @@
+<h1>API Commands</h1>
+<div class="rule"></div>
+<p>
+    Let's get familiar with the API Commands table. This is where the definition of your API lives.
+</p>
+
+<h2>Navigating to the API Commands Table</h2>
+<p>
+    Log in to your publisher site. For this example we will use
+    <b>test.encompass8.com.</b>
+</p>
+<p>
+    In the search field enter
+    <b>API Commands</b>. You will be taken to
+    <b>TableView.aspx?TableName=APICommands</b>.
+</p>
+<p>
+    <div class="screen-title">
+        TableView.aspx?TableName=APICommands
+    </div>
+    <div class="screen" style="background: #ededed;">
+        <img src="/assets/docs/encompass-api/commands-table.png">
+    </div>
+</p>
+
+<h2>Get to Know the API Command Fields</h2>
+<p>
+    Click the
+    <b>Add API Command Button.</b>
+</p>
+<p>
+    <div class="screen-title">
+        TableView.aspx?Action=Add&amp;TableEdit=APICommands
+    </div>
+    <div class="screen" style="background: #ededed;">
+        <img src="/assets/docs/encompass-api/add-command-table.png">
+    </div>
+</p>
+<p>
+    A brif explination of each field;
+</p>
+<p class="note">
+    Fields marked with a * are required. And any field you filter on will be automatically populated.
+</p>
+<p>
+    <ul>
+        <li>
+            <b>Publisher ID</b> Set this to your publisher name.
+            <br>
+            <br>
+        </li>
+        <li>
+            <b>Command Name</b> This is the name of the command, you will use this in your application.
+            <br>
+            <br>
+        </li>
+        <li>
+            <b>URL</b> This is the URL inside Encompass. This tells the API how to get to the data. For this tutorial we will
+            always append
+            <b>Format=JSON</b>.
+            <br>
+            <br>
+        </li>
+        <li>
+            <b>Allowed Parameter Array</b> By default Encompass will not allow any parameters. This is for security. This field
+            "white-lists" parameters. When a parameter is passed to the API that is not "white-listed" the API call will
+            fail.
+            <br>
+            <br>
+        </li>
+        <li>
+            <b>Active</b> This allows you to deactivate a command without deleting it.
+            <br>
+            <br>
+        </li>
+        <li>
+            <b>Is Global</b> This field allows you to install a command that doesn't need to be installed on every distributor
+            site. Note: Many publishers might not see this field, because of permissions.
+            <br>
+            <br>
+        </li>
+        <li>
+            <b>Description</b> This is an open test field. Allows you to add a description to your command.
+            <br>
+            <br>
+        </li>
+    </ul>
+</p>
+<p class="note">
+    Typically you will not be making commands manually. Encompass has shortcuts in each system that supports API Commands.
+</p>
+
+<h2>Testing You API Commands</h2>
+<p>
+    Because Encompass uses an "open ended" system and handles authentication for you, you do not need any authrization headers.
+    This makes it very easy to test API commands with your browser, with an exception to importing data that uses POST.
+</p>
+<p>
+    Once you have created commands and installed them in your test site, you will be able to test and view the output by entering
+    this URL;
+</p>
+<p class="terminal">
+    <b>https://api.encompass8.com/aspx1/API.aspx?Token=</b><span style="color: #10b0c9;">[YOUR_TOKEN_HERE]</span><b>&EncompassID=</b><span style="color: #10b0c9;">[ENCOMPASS_ID_OF_TEST_SITE]</span><b>&Command=</b><span style="color: #10b0c9;">[COMMAND_NAME]</span>
+</p>
+<p>
+    When you install an API Command you will be given a sample link that you can use for testing.
+</p>
+
+<h2>What's Next?</h2>
+<p class="note">
+    <span class="next-step">Next Step</span>
+    <br>
+    <br> Now that you are familiar with API Commands. Let's contunue by making the GetProducts Command
+    <a href="/docs/encompass-api/get-products">GetProducts Command</a>.
+</p>

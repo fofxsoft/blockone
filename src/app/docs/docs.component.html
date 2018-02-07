@@ -1,0 +1,101 @@
+<mat-drawer-container class="layout" autosize>
+    <mat-drawer #drawer class="menu" mode="side" opened="true">
+        <mat-accordion class="docs-menu" displayMode="flat">
+            <mat-expansion-panel (opened)="!section || section == 'getting-started'" [expanded]="!section || section == 'getting-started'">
+                <mat-expansion-panel-header (click)="loadDocument('getting-started')">
+                    <mat-panel-title [class.active]="!section || section == 'getting-started'">
+                        Getting Started
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <ul>
+                    <li [class.active]="(!section || section == 'getting-started') && document == 'index'" (click)="loadDocument('getting-started')">
+                        Overview
+                    </li>
+                    <li [class.active]="(!section || section == 'getting-started') && document == 'vs-code'" (click)="loadDocument('getting-started', 'vs-code')">
+                        Visual Studio Code
+                    </li>
+                    <li [class.active]="(!section || section == 'getting-started') && document == 'node-sass'" (click)="loadDocument('getting-started', 'node-sass')">
+                        Node.js, NPM and SASS
+                    </li>
+                    <li [class.active]="(!section || section == 'getting-started') && document == 'angular-cli'" (click)="loadDocument('getting-started', 'angular-cli')">
+                        Angular CLI
+                    </li>
+                </ul>
+            </mat-expansion-panel>
+            <mat-expansion-panel (opened)="section == 'encompass-api'" [expanded]="section == 'encompass-api'">
+                <mat-expansion-panel-header (click)="loadDocument('encompass-api')">
+                    <mat-panel-title [class.active]="section == 'encompass-api'">
+                        Encompass API
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <ul>
+                    <li [class.active]="section == 'encompass-api' && document == 'index'" (click)="loadDocument('encompass-api')">
+                        Overview
+                    </li>
+                    <li [class.active]="section == 'encompass-api' && document == 'commands'" (click)="loadDocument('encompass-api', 'commands')">
+                        API Commands
+                    </li>
+                    <li [class.active]="section == 'encompass-api' && document == 'get-products'" (click)="loadDocument('encompass-api', 'get-products')">
+                        Get Products Command
+                    </li>
+                    <li [class.active]="section == 'encompass-api' && document == 'get-product'" (click)="loadDocument('encompass-api', 'get-product')">
+                        Get Product Command
+                    </li>
+                    <li [class.active]="section == 'encompass-api' && document == 'get-brand'" (click)="loadDocument('encompass-api', 'get-brand')">
+                        Get Brand Command
+                    </li>
+                    <li [class.active]="section == 'encompass-api' && document == 'update-product'" (click)="loadDocument('encompass-api', 'update-product')">
+                        Update Product Command
+                    </li>
+                    <li [class.active]="section == 'encompass-api' && document == 'product-info'" (click)="loadDocument('encompass-api', 'product-info')">
+                        Get Product Information
+                    </li>
+                    <li [class.active]="section == 'encompass-api' && document == 'install-command'" (click)="loadDocument('encompass-api', 'install-command')">
+                        Installing Commands
+                    </li>
+                </ul>
+            </mat-expansion-panel>
+            <mat-expansion-panel (opened)="section == 'product-editor'" [expanded]="section == 'product-editor'">
+                <mat-expansion-panel-header (click)="loadDocument('product-editor')">
+                    <mat-panel-title [class.active]="section == 'product-editor'">
+                        Product Editor
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <ul>
+                    <li [class.active]="section == 'product-editor' && document == 'index'" (click)="loadDocument('product-editor')">
+                        Overview
+                    </li>
+                    <li [class.active]="section == 'product-editor' && document == 'app-shell'" (click)="loadDocument('product-editor', 'app-shell')">
+                        Application Shell
+                    </li>
+                    <li [class.active]="section == 'product-editor' && document == 'services'" (click)="loadDocument('product-editor', 'services')">
+                        Services
+                    </li>
+                    <li [class.active]="section == 'product-editor' && document == 'material'" (click)="loadDocument('product-editor', 'material')">
+                        User Interface
+                    </li>
+                    <li [class.active]="section == 'product-editor' && document == 'routing'" (click)="loadDocument('product-editor', 'routing')">
+                        Routing
+                    </li>
+                    <li [class.active]="section == 'product-editor' && document == 'product-list'" (click)="loadDocument('product-editor', 'product-list')">
+                        Product List
+                    </li>
+                    <li [class.active]="section == 'product-editor' && document == 'product-detail'" (click)="loadDocument('product-editor', 'product-detail')">
+                        Product Detail
+                    </li>
+                    <li [class.active]="section == 'product-editor' && document == 'dashboard'" (click)="loadDocument('product-editor', 'dashboard')">
+                        Dashboard
+                    </li>
+                    <li [class.active]="section == 'product-editor' && document == 'log'" (click)="loadDocument('product-editor', 'log')">
+                        Logging
+                    </li>
+                </ul>
+            </mat-expansion-panel>
+        </mat-accordion>
+    </mat-drawer>
+    <mat-drawer-content>
+        <main>
+            <div *ngIf="body" class="document" [innerHTML]="body | keepHtml"></div>
+        </main>
+    </mat-drawer-content>
+</mat-drawer-container>

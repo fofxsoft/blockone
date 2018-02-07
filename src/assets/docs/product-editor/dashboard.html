@@ -1,0 +1,277 @@
+<h1>Dashboard</h1>
+<div class="rule"></div>
+<p>
+    To this point you have been entering the route into the URL. Users are not going to want to do this. A better approach is
+    to have a component load directly to the screen. You could simply add a redirecting route to the
+    <b>AppRoutingModule</b>. However, we have an opportunity to go that extra step by adding a dashboard. This will not only
+    give the project an entrypoint, but now you can make the user experience better by showing the user some high level information
+    about the products they are working with.
+</p>
+
+<h2>Create the Dashboard Model</h2>
+<p>
+    In the
+    <b>src/app/models/</b> folder create a new file named
+    <b>dashboard.model.ts</b>.
+</p>
+<p>
+    <div class="code-title">
+        src/app/models/dashboard.model.ts
+    </div>
+    <pre class="code"><span style="color: #0000ff">export</span> <span style="color: #0000ff">interface</span> Dashboard {
+    TrackInventory: <span style="color: #2b91af">string</span>;
+    ProductID: <span style="color: #2b91af">string</span>;
+}</pre>
+</p>
+<p>
+    This defines the data that is coming from the ProductInfo API command.
+</p>
+
+<h2>Create the Dashboard Component</h2>
+<p>
+    Using the Angular CLI, generate a new component named
+    <b>dashboard</b>
+</p>
+<p class="terminal">
+    ng generate component dashboard
+</p>
+<p>
+    The CLI creates a new folder,
+    <b>src/app/dashboard/</b> and generates the three files of the
+    <b>DashboardComponent</b>.
+</p>
+<p>
+    The
+    <b>DashboardComponent</b> class file is as follows:
+</p>
+<p>
+    <div class="code-title">
+        src/app/dashboard/dashboard.component.ts
+    </div>
+    <pre class="code"><span style="color: #0000ff">import</span> { Component, OnInit } from <span style="color: #a31515">&#39;@angular/core&#39;</span>;
+
+<span style="color: #a31515">@Component</span>({
+  selector: <span style="color: #a31515">&#39;app-dashboard&#39;</span>,
+  templateUrl: <span style="color: #a31515">&#39;./dashboard.component.html&#39;</span>,
+  styleUrls: [<span style="color: #a31515">&#39;./dashboard.component.scss&#39;</span>]
+})
+
+<span style="color: #0000ff">export</span> <span style="color: #0000ff">class</span> DashboardComponent <span style="color: #0000ff">implements</span> OnInit {
+  <span style="color: #0000ff">constructor</span>() { }
+
+  ngOnInit() { }
+}</pre>
+</p>
+
+<h2>Setup the Dashboard Properties</h2>
+<p>
+    You will need to call the
+    <b>ProductInfo</b> Encompass API command. And then you will need to set the
+    <b>tracked</b>,
+    <b>notTracked</b> and
+    <b>total</b> variables. These will be used by the dashboard view.
+</p>
+<p>
+    Edit the
+    <b>src/app/dashboard/dashboard.component.ts</b> file.
+</p>
+<p>
+    <div class="code-title">
+        src/app/dashboard/dashboard.component.ts
+    </div>
+    <pre class="code"><span style="color: #0000ff">import</span> { Component, OnInit } from <span style="color: #a31515">&#39;@angular/core&#39;</span>;
+
+<span style="color: #0000ff">import</span> { EcpService } from <span style="color: #a31515">&quot;../ecp.service&quot;</span>;
+
+<span style="color: #0000ff">import</span> { Dashboard } from <span style="color: #a31515">&quot;../models/dashboard.model&quot;</span>;
+
+<span style="color: #a31515">@Component</span>({
+    selector: <span style="color: #a31515">&#39;app-dashboard&#39;</span>,
+    templateUrl: <span style="color: #a31515">&#39;./dashboard.component.html&#39;</span>,
+    styleUrls: [<span style="color: #a31515">&#39;./dashboard.component.scss&#39;</span>]
+})
+
+<span style="color: #0000ff">export</span> <span style="color: #0000ff">class</span> DashboardComponent <span style="color: #0000ff">implements</span> OnInit {
+    <span style="color: #0000ff">constructor</span>(<span style="color: #0000ff">public</span> ECP: <span style="color: #2b91af">EcpService</span>) { }
+
+    tracked: <span style="color: #2b91af">number</span> = 0;
+    notTracked: <span style="color: #2b91af">number</span> = 0;
+    total: <span style="color: #2b91af">number</span> = 0;
+
+    isLoadingResults = <span style="color: #0000ff">true</span>;
+
+    ngOnInit() {
+        <span style="color: #0000ff">this</span>.ECP.Report&lt;Dashboard&gt;(<span style="color: #a31515">&#39;[ENCOMPASS_ID]&#39;</span>, <span style="color: #a31515">&#39;ProductInfo&#39;</span>).subscribe(data =&gt; {
+            <span style="color: #0000ff">for</span> (<span style="color: #0000ff">var</span> i = 0; i &lt; data.Export.Report.Row.length; i++) {
+                <span style="color: #0000ff">switch</span> (data.Export.Report.Row[i].TrackInventory) {
+                    <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;True&quot;</span>:
+                        <span style="color: #0000ff">this</span>.tracked = parseInt(data.Export.Report.Row[i].ProductID);
+                        <span style="color: #0000ff">break</span>;
+
+                    <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;False&quot;</span>:
+                        <span style="color: #0000ff">this</span>.notTracked = parseInt(data.Export.Report.Row[i].ProductID);
+                        <span style="color: #0000ff">break</span>;
+                }
+            }
+
+            <span style="color: #0000ff">this</span>.total = <span style="color: #0000ff">this</span>.tracked + <span style="color: #0000ff">this</span>.notTracked;
+            <span style="color: #0000ff">this</span>.isLoadingResults = <span style="color: #0000ff">false</span>;
+        });
+    }
+}</pre>
+</p>
+<p class="note">
+    Notice there is no reference to the
+    <b>Observable</b> module. This is because setting variables are not asynchronous. The values will be 0 until the Encompass
+    API returns the results.
+</p>
+
+<h2>Define the View</h2>
+<p>
+    To show the data, you will use Material cards, displayed inline.
+</p>
+<p>
+    Edit the
+    <b>src/app/dashboard/dashboard.component.html</b> file.
+</p>
+<p>
+    <div class="code-title">
+        src/app/dashboard/dashboard.component.html
+    </div>
+    <pre class="code"><span style="color: #8B008B; font-weight: bold">&lt;div</span> <span style="color: #658b00">class=</span><span style="color: #CD5555">&quot;dashboard&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+    <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-card</span> <span style="color: #658b00">class=</span><span style="color: #CD5555">&quot;dashboard-card&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+        <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-card-header</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+            <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-card-title</span><span style="color: #8B008B; font-weight: bold">&gt;</span>Products<span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-card-title&gt;
+            <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-card-subtitle</span><span style="color: #8B008B; font-weight: bold">&gt;</span>Products in Inventory<span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-card-subtitle&gt;
+        <span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-card-header&gt;
+        <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-card-content</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+            <span style="color: #8B008B; font-weight: bold">&lt;span</span> <span style="color: #658b00">class=</span><span style="color: #CD5555">&quot;dashboard-count&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>{{ tracked | number }}<span style="color: #8B008B; font-weight: bold">&lt;/span&gt;</span>
+        <span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-card-content&gt;
+    <span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-card&gt;
+    <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-card</span> <span style="color: #658b00">class=</span><span style="color: #CD5555">&quot;dashboard-card&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+        <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-card-header</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+            <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-card-title</span><span style="color: #8B008B; font-weight: bold">&gt;</span>Non-Inventory Products<span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-card-title&gt;
+            <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-card-subtitle</span><span style="color: #8B008B; font-weight: bold">&gt;</span>Products Not in Inventory<span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-card-subtitle&gt;
+        <span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-card-header&gt;
+        <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-card-content</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+            <span style="color: #8B008B; font-weight: bold">&lt;span</span> <span style="color: #658b00">class=</span><span style="color: #CD5555">&quot;dashboard-count&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>{{ notTracked | number }}<span style="color: #8B008B; font-weight: bold">&lt;/span&gt;</span>
+        <span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-card-content&gt;
+    <span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-card&gt;
+    <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-card</span> <span style="color: #658b00">class=</span><span style="color: #CD5555">&quot;dashboard-card&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+        <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-card-header</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+            <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-card-title</span><span style="color: #8B008B; font-weight: bold">&gt;</span>Total Products<span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-card-title&gt;
+            <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-card-subtitle</span><span style="color: #8B008B; font-weight: bold">&gt;</span>Total Product Count<span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-card-subtitle&gt;
+        <span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-card-header&gt;
+        <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-card-content</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+            <span style="color: #8B008B; font-weight: bold">&lt;span</span> <span style="color: #658b00">class=</span><span style="color: #CD5555">&quot;dashboard-count&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>{{ total | number }}<span style="color: #8B008B; font-weight: bold">&lt;/span&gt;</span>
+        <span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-card-content&gt;
+    <span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-card&gt;
+<span style="color: #8B008B; font-weight: bold">&lt;/div&gt;</span></pre>
+</p>
+<p class="note">
+    Notice that variable bindings have an extra directive in them
+    <b>{{ total | number }}</b>. In Angular these are known as filters. This will format the data as a number. This will convert
+    numbers liek this
+    <b>123456</b> to
+    <b>123,456</b>.
+</p>
+
+<h2>Define the Style</h2>
+<p>
+    By default cards expand to the width of the screen. You will need to change this to display inline.
+</p>
+<p>
+    Edit the
+    <b>src/app/dashboard/dashboard.component.scss</b> file.
+</p>
+<p>
+    <div class="code-title">
+        src/app/dashboard/dashboard.component.scss
+    </div>
+    <pre class="code"><span style="color: #0000ff">@import</span> <span style="color: #a31515">&quot;../../../node_modules/@angular/material/_theming.scss&quot;</span>;
+
+<span style="color: #0000ff">@include</span> mat-core;
+
+<span style="color: #2b91af">.dashboard</span> {
+    margin: 10<span style="color: #2b91af">px</span>;
+}
+
+<span style="color: #2b91af">.dashboard-card</span> {
+    <span style="color: #0000ff">@extend</span> <span style="color: #2b91af">.mat-elevation-z6</span>;
+
+    margin: 10px;
+    width: 225px;
+    display: inline-block;
+
+    <span style="color: #2b91af">.dashboard-count</span> {
+        color: #4757ff;
+        font-size: 50<span style="color: #2b91af">px</span>;
+        margin: 0 5<span style="color: #2b91af">px</span>;
+    }
+}</pre>
+</p>
+
+<h2>Add a Route</h2>
+<p>
+    Now let's setup the route and redirect for the root.
+</p>
+<p>
+    Edit the
+    <b>src/app/app-routing.ts</b> file.
+</p>
+<p>
+    Add the
+    <b>DashboardComponent</b> to the router.
+</p>
+<p>
+    <div class="code-title">
+        src/app/app-routing.module.ts
+    </div>
+    <pre class="code"><span style="color: #0000ff">import</span> { NgModule } from <span style="color: #a31515">&#39;@angular/core&#39;</span>;
+<span style="color: #0000ff">import</span> { RouterModule, Routes } from <span style="color: #a31515">&#39;@angular/router&#39;</span>;
+
+<span style="color: #0000ff">import</span> { DashboardComponent } from <span style="color: #a31515">&#39;./dashboard/dashboard.component&#39;</span>;
+<span style="color: #0000ff">import</span> { ProductListComponent } from <span style="color: #a31515">&#39;./product-list/product-list.component&#39;</span>;
+<span style="color: #0000ff">import</span> { ProductDetailComponent } from <span style="color: #a31515">&#39;./product-detail/product-detail.component&#39;</span>;
+
+<span style="color: #0000ff">const</span> routes: <span style="color: #2b91af">Routes</span> = [
+    { path: <span style="color: #a31515">&#39;&#39;</span>, redirectTo: <span style="color: #a31515">&#39;dashboard&#39;</span>, pathMatch: <span style="color: #a31515">&#39;full&#39;</span> },
+    { path: <span style="color: #a31515">&#39;dashboard&#39;</span>, component: DashboardComponent },
+    { path: <span style="color: #a31515">&#39;products&#39;</span>, redirectTo: <span style="color: #a31515">&#39;products/0&#39;</span>, pathMatch: <span style="color: #a31515">&#39;full&#39;</span> },
+    { path: <span style="color: #a31515">&#39;products/:page&#39;</span>, component: ProductListComponent },
+    { path: <span style="color: #a31515">&#39;products/:page/:id&#39;</span>, component: ProductDetailComponent }
+];
+
+<span style="color: #a31515">@NgModule</span>({
+    imports: [ RouterModule.forRoot(routes) ],
+    exports: [ RouterModule ]
+})
+
+<span style="color: #0000ff">export</span> <span style="color: #0000ff">class</span> AppRoutingModule { }</pre>
+</p>
+<p class="note">
+    Best practices is to fully define your components. Yiou could simply map the root to the
+    <b>DashboardComponent</b>, however it has a name. It is better to redirect to the route.
+</p>
+
+<h2>Try it Out</h2>
+<p>
+    You now have a complete application!
+</p>
+<p>
+    In your browser go to
+    <b>http://localhost:4200</b>.
+</p>
+
+<h2>What's Next?</h2>
+<p>
+    Congratulations! You have compleated your app.
+</p>
+
+<p class="note">
+    <span class="next-step">Next Step</span>
+    <br>
+    <br>Remember, you created the
+    <b>LogService</b>? It would be nice to see the log when debugging. Continue with the
+    <a href="/docs/product-editor/log">Logging</a> component.
+</p>
