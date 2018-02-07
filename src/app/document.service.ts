@@ -11,7 +11,7 @@ export class DocumentService {
     constructor(private http: HttpClient) { }
 
     load(parent: string, section?: string, document?: string): Observable<string> {
-        var url: string = `/assets/${parent}/`;
+        var url: string = `/help/assets/${parent}/`;
 
         if (section) {
             if (document) {
