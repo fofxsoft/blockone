@@ -1,0 +1,578 @@
+<h1>Services</h1>
+<div class="rule"></div>
+<p>
+    Components shouldn't fetch or save data directly. They should focus on presenting data and delegate data access to a service.
+</p>
+<p>
+    In this tutorial, you'll create the
+    <b>EcpService</b> that all application classes can use to get data from the Encompass API. Instead of creating that service
+    with
+    <b>new</b>, you'll rely on
+    <b>Angular Dependency Injection</b> to inject it into the component's constructor.
+</p>
+<p>
+    Services are a great way to share information among classes that don't know each other. You'll create a
+    <b>LogService</b> and inject it in two places:
+</p>
+<p>
+    <ul>
+        <li>
+            <b>EcpService</b> which uses the service to send a message.</li>
+        <li>
+            <b>LogComponent</b> which displays that message.</li>
+    </ul>
+</p>
+
+<h2>Defining the Enviornment</h2>
+<p>
+    Angular uses enviornment for variables specific to production or development.
+</p>
+<p>
+    Edit the
+    <b>src/environments/environment.ts</b> file.
+</p>
+<p>
+    <div class="code-title">
+        src/environments/environment.ts
+    </div>
+    <pre class="code"><span style="color: #0000ff">export</span> <span style="color: #0000ff">const</span> environment = {
+    production: <span style="color: #2b91af">false</span>,
+    debug: <span style="color: #2b91af">true</span>,
+    ecp: {
+        publisher: <span style="color: #a31515">&#39;[YOUR_PUBLISHER_NAME]&#39;</span>,
+        token: <span style="color: #a31515">&#39;[YOUR_ENCOMPASS_API_TOKEN]&#39;</span>,
+        protocol: <span style="color: #a31515">&#39;http&#39;</span>,
+        domain: <span style="color: #a31515">&#39;localhost&#39;</span>
+    }
+};</pre>
+</p>
+<p>
+    Now lets edit the production
+    <b>src/environments/environment.prod.ts</b> file.
+</p>
+<p>
+    <div class="code-title">
+        src/environments/environment.ts
+    </div>
+    <pre class="code"><span style="color: #0000ff">export</span> <span style="color: #0000ff">const</span> environment = {
+    production: <span style="color: #2b91af">true</span>,
+    debug: <span style="color: #2b91af">false</span>,
+    ecp: {
+        publisher: <span style="color: #a31515">&#39;[YOUR_PUBLISHER_NAME]&#39;</span>,
+        token: <span style="color: #a31515">&#39;[YOUR_ENCOMPASS_API_TOKEN]&#39;</span>,
+        protocol: <span style="color: #a31515">&#39;https&#39;</span>,
+        domain: <span style="color: #a31515">&#39;api.encompass8.com&#39;</span>
+    }
+};</pre>
+</p>
+<p>
+    Notice that the
+    <b>production</b> and
+    <b>debug</b> variables are different. There also are different
+    <b>protocol</b> and
+    <b>domain</b> variables. This way we can use test systems for development.
+</p>
+
+<h2>Create the LogService</h2>
+<p>
+    Using the Angular CLI, create a service called
+    <b>log</b>
+</p>
+<p class="terminal">
+    ng generate service log --module=app
+</p>
+<p class="note">
+    You are calling the CLI with the
+    <b>--module=app</b> flag. This automatically adds an include in the
+    <b>src/app/app.module.ts</b> file. It also adds the clss
+    <b>LogService</b> to the
+    <b>providers</b> array. If you forget the
+    <b>--module=app</b> flag you will have to add this manually.
+</p>
+<p>
+    The command generates skeleton
+    <b>LogService</b> class in
+    <b>src/app/log.service.ts</b> The
+    <b>LogService</b> class should look like the below.
+</p>
+<p>
+    <div class="code-title">
+        src/app/log.service.ts
+    </div>
+    <pre class="code"><span style="color: #0000ff">import</span> { Injectable } from <span style="color: #a31515">&#39;@angular/core&#39;</span>;
+
+<span style="color: #a31515">@Injectable()</span>
+
+<span style="color: #0000ff">export</span> <span style="color: #0000ff">class</span> LogService {
+  <span style="color: #0000ff">constructor</span>() { }
+}</pre>
+</p>
+<p>
+    Change the
+    <b>LogService</b> class in
+    <b>src/app/log.service.ts</b>.
+</p>
+<p>
+    <div class="code-title">
+        src/app/log.service.ts
+    </div>
+    <pre class="code"><span style="color: #0000ff">import</span> { Injectable } from <span style="color: #a31515">&#39;@angular/core&#39;</span>;
+<span style="color: #0000ff">import</span> { environment } from <span style="color: #a31515">&#39;../environments/environment&#39;</span>;
+
+<span style="color: #a31515">@Injectable()</span>
+
+<span style="color: #0000ff">export</span> <span style="color: #0000ff">class</span> LogService {
+    messages: <span style="color: #2b91af">string</span>[] = [];
+    display: <span style="color: #2b91af">boolean</span> = environment.debug;
+
+    write(title: <span style="color: #2b91af">string</span>, message: <span style="color: #2b91af">string</span>) {
+        <span style="color: #0000ff">if</span> (environment.debug) {
+            <span style="color: #0000ff">this</span>.messages.push(<span style="color: #a31515">`</span>${title}<span style="color: #a31515">:\n</span>${message}<span style="color: #a31515">\n`</span>);
+
+            <span style="color: #0000ff">while</span> (<span style="color: #0000ff">this</span>.messages.length &gt; 100) {
+                <span style="color: #0000ff">this</span>.messages.shift();
+            }
+        }
+    }
+
+    clear() {
+        <span style="color: #0000ff">this</span>.messages = [];
+    }
+}</pre>
+</p>
+<p>
+    You added a reference to the
+    <b>environment</b>. Now we can automatically stop debug logging for production systems.
+</p>
+<p>
+    You also added the
+    <b>write</b> and
+    <b>clear</b> methods. Now we can use this in our components and services to help with debugging.
+</p>
+
+<h2>@Injectable() Services</h2>
+<p>
+    Notice that the new service imports the Angular
+    <b>Injectable</b> symbol and annotates the class with the
+    <b>@Injectable()</b> decorator.
+</p>
+<p>
+    The
+    <b>@Injectable()</b> decorator tells Angular that this service might itself have injected dependencies. It doesn't have
+    dependencies now but it will soon. Whether it does or it doesn't, it's good practice to keep the decorator.
+</p>
+<p class="note">
+    The Angular style guidelines strongly recommend keeping it and the linter enforces this rule.
+</p>
+
+<h2>Create the EcpService</h2>
+<p>
+    Using the Angular CLI, create a service called
+    <b>ecp</b>
+</p>
+<p class="terminal">
+    ng generate service ecp --module=app
+</p>
+<p>
+    The command generates skeleton
+    <b>EcpService</b> class in
+    <b>src/app/ecp.service.ts</b> The
+    <b>EcpService</b> class should look like the below.
+</p>
+<p>
+    <div class="code-title">
+        src/app/ecp.service.ts
+    </div>
+    <pre class="code"><span style="color: #0000ff">import</span> { Injectable } from <span style="color: #a31515">&#39;@angular/core&#39;</span>;
+
+<span style="color: #a31515">@Injectable()</span>
+
+<span style="color: #0000ff">export</span> <span style="color: #0000ff">class</span> EcpService {
+  <span style="color: #0000ff">constructor</span>() { }
+}</pre>
+</p>
+<p>
+    Import the Angular HTTP library.
+</p>
+<p>
+    <div class="code-title">
+        src/app/ecp.service.ts
+    </div>
+    <pre class="code"><span style="color: #0000ff">import</span> { Injectable } from <span style="color: #a31515">&#39;@angular/core&#39;</span>;
+<span style="color: #0000ff">import</span> { HttpClient, HttpHeaders } from <span style="color: #a31515">&#39;@angular/common/http&#39;</span>;
+
+<span style="color: #a31515">@Injectable()</span>
+
+<span style="color: #0000ff">export</span> <span style="color: #0000ff">class</span> EcpService {
+  <span style="color: #0000ff">constructor</span>(<span style="color: #0000ff">private</span> http: <span style="color: #2b91af">HttpClient</span>) { }
+}</pre>
+</p>
+<p>
+    When you add an
+    <b>@Injectable()</b> component, you need to add it to the
+    <b>constructor</b>. This makes the component available to the class.
+</p>
+<p>
+    Now since you are adding a reference to the HTTP library, you will need to import this in the
+    <b>src/app/app.module.ts</b> file.
+</p>
+<p>
+    <div class="code-title">
+        src/app/app.module.ts
+    </div>
+    <pre class="code"><span style="color: #0000ff">import</span> { NgModule } from <span style="color: #a31515">&#39;@angular/core&#39;</span>;
+<span style="color: #0000ff">import</span> { BrowserModule } from <span style="color: #a31515">&#39;@angular/platform-browser&#39;</span>;
+<span style="color: #0000ff">import</span> { HttpClientModule } from <span style="color: #a31515">&#39;@angular/common/http&#39;</span>
+
+<span style="color: #0000ff">import</span> { AppComponent } from <span style="color: #a31515">&#39;./app.component&#39;</span>;
+
+<span style="color: #0000ff">import</span> { EcpService } from <span style="color: #a31515">&#39;./ecp.service&#39;</span>;
+<span style="color: #0000ff">import</span> { LogService } from <span style="color: #a31515">&#39;./log.service&#39;</span>;
+
+<span style="color: #a31515">@NgModule</span>({
+    declarations: [
+        AppComponent
+    ],
+    imports: [
+        BrowserModule,
+        HttpClientModule
+    ],
+    providers: [
+        EcpService,
+        LogService
+    ],
+    bootstrap: [AppComponent]
+})
+
+<span style="color: #0000ff">export</span> <span style="color: #0000ff">class</span> AppModule { }</pre>
+</p>
+<p>
+    Add a reference to the
+    <b>environment</b> and the
+    <b>LogService</b>
+</p>
+<p>
+    <div class="code-title">
+        src/app/ecp.service.ts
+    </div>
+    <pre class="code"><span style="color: #0000ff">import</span> { Injectable } from <span style="color: #a31515">&#39;@angular/core&#39;</span>;
+<span style="color: #0000ff">import</span> { HttpClient, HttpHeaders } from <span style="color: #a31515">&#39;@angular/common/http&#39;</span>;
+
+<span style="color: #0000ff">import</span> { LogService } from <span style="color: #a31515">&#39;./log.service&#39;</span>;
+<span style="color: #0000ff">import</span> { environment } from <span style="color: #a31515">&#39;../environments/environment&#39;</span>;
+
+<span style="color: #a31515">@Injectable()</span>
+
+<span style="color: #0000ff">export</span> <span style="color: #0000ff">class</span> EcpService {
+  <span style="color: #0000ff">constructor</span>(<span style="color: #0000ff">private</span> http: <span style="color: #2b91af">HttpClient</span>, <span style="color: #0000ff">public</span> log: <span style="color: #2b91af">LogService</span>) { }
+
+    get Log(): LogService {
+        <span style="color: #0000ff">return</span> <span style="color: #0000ff">this</span>.log;
+    }
+}</pre>
+</p>
+<p>
+    You also added a property, so we don't need to inject the
+    <b>EcpService</b> and
+    <b>LogService</b>, you only need the
+    <b>EcpService</b>.
+</p>
+
+<h2>Observable Data</h2>
+<p>
+    The
+    <b>EcpService</b> must fetch and send data via the web. Since this will not return data immediately, it will block the users
+    browser while the service waits.
+</p>
+<p>
+    Observable data solves this by making
+    <b>asynchronous</b> calls. To make asynchronous calls you could use callbacks, return a promise or return an opservable.
+    Since we are using Angular's
+    <b>HttpClient</b>, which uses
+    <b>Observable</b>, we will do the same.
+</p>
+<p>
+    <b>Observable</b> is one of the key classes in the
+    <b>RxJS</b> library.
+</p>
+<p>
+    You will also need to add Observable support for
+    <b>of()</b>,
+    <b>tap()</b> and
+    <b>catchError()</b>.
+</p>
+<p>
+    Edit the
+    <b>src/app/ecp.service.ts</b> file.
+</p>
+<p>
+    <div class="code-title">
+        src/app/ecp.service.ts
+    </div>
+    <pre class="code"><span style="color: #0000ff">import</span> { Injectable } from <span style="color: #a31515">&#39;@angular/core&#39;</span>;
+<span style="color: #0000ff">import</span> { HttpClient, HttpHeaders } from <span style="color: #a31515">&#39;@angular/common/http&#39;</span>;
+<span style="color: #0000ff">import</span> { Observable } from <span style="color: #a31515">&#39;rxjs/Observable&#39;</span>;
+
+<span style="color: #0000ff">import</span> { of } from <span style="color: #a31515">&#39;rxjs/observable/of&#39;</span>;
+<span style="color: #0000ff">import</span> { catchError, tap } from <span style="color: #a31515">&#39;rxjs/operators&#39;</span>;
+
+<span style="color: #0000ff">import</span> { LogService } from <span style="color: #a31515">&#39;./log.service&#39;</span>;
+<span style="color: #0000ff">import</span> { environment } from <span style="color: #a31515">&#39;../environments/environment&#39;</span>;
+
+<span style="color: #a31515">@Injectable()</span>
+
+<span style="color: #0000ff">export</span> <span style="color: #0000ff">class</span> EcpService {
+  <span style="color: #0000ff">constructor</span>(<span style="color: #0000ff">private</span> http: <span style="color: #2b91af">HttpClient</span>, <span style="color: #0000ff">public</span> log: <span style="color: #2b91af">LogService</span>) { }
+
+    get Log(): LogService {
+        <span style="color: #0000ff">return</span> <span style="color: #0000ff">this</span>.log;
+    }
+}
+
+<span style="color: #0000ff">export</span> <span style="color: #0000ff">interface</span> Report&lt;T&gt; {
+    Export: {
+        Report: {
+            Row: <span style="color: #2b91af">T</span>[];
+        }
+    }
+}
+
+<span style="color: #0000ff">export</span> <span style="color: #0000ff">interface</span> Record&lt;T&gt; {
+    Export: {
+        Table: {
+            RecordCount: <span style="color: #2b91af">number</span>;
+            Name: <span style="color: #2b91af">string</span>;
+            Row: <span style="color: #2b91af">T</span>;
+        }
+    }
+}
+
+<span style="color: #0000ff">export</span> <span style="color: #0000ff">interface</span> Records&lt;T&gt; {
+    Export: {
+        Table: {
+            RecordCount: <span style="color: #2b91af">number</span>;
+            Name: <span style="color: #2b91af">string</span>;
+            Row: <span style="color: #2b91af">T</span>[];
+        }
+    }
+}</pre>
+</p>
+<p>
+    You also added interfaces for the JSON results you will get from the Encompass API. The Encompass API exports data in one
+    of three ways:
+</p>
+<p>
+    <ul>
+        <li>
+            <b>Reports</b> the JSON data will contain an array of
+            <b>Row</b> under
+            <b>Export</b> ->
+            <b>Report</b>
+        </li>
+        <li>
+            <b>Table Records</b> the JSON data will contain an array of
+            <b>Row</b> under
+            <b>Export</b> ->
+            <b>Table</b>
+        </li>
+        <li>
+            <b>Table Single Record</b> the JSON data will contain a single
+            <b>Row</b> object under
+            <b>Export</b> ->
+            <b>Table</b>
+        </li>
+    </ul>
+</p>
+<p class="note">
+    Table data contains a
+    <b>RecordCount</b> and
+    <b>Name</b>. The
+    <b>RecordCount</b> contains the total number of records in the table. This is useful when paginating data.
+    <br>
+    <br>Notice that there is a
+    <b>T</b> type for each interface. And that the
+    <b>Row</b> is set to type
+    <b>T</b>. These are known as generics. It allow you to change the data model. For example: when you are requesting a product
+    from the Encompass API you will use
+    <b>Record&lt;Product&gt;</b>, however when requesting a brand you would use
+    <b>Record&lt;Brand&gt;</b>. We will conver this further when building the various components.
+</p>
+
+<h2>Finish the EcpService</h2>
+<p>
+    You will need to create four methods.
+    <b>Report()</b>,
+    <b>Records()</b> and
+    <b>Single()</b> one for each interface. And an
+    <b>Update()</b> method which is needed to POST data to the Encompass API.
+</p>
+<p>
+    Edit the
+    <b>src/app/ecp.service.ts</b> file.
+</p>
+<p>
+    <div class="code-title">
+        src/app/ecp.service.ts
+    </div>
+    <pre class="code"><span style="color: #0000ff">import</span> { Injectable } from <span style="color: #a31515">&#39;@angular/core&#39;</span>;
+<span style="color: #0000ff">import</span> { HttpClient, HttpHeaders } from <span style="color: #a31515">&#39;@angular/common/http&#39;</span>;
+<span style="color: #0000ff">import</span> { Observable } from <span style="color: #a31515">&#39;rxjs/Observable&#39;</span>;
+
+<span style="color: #0000ff">import</span> { of } from <span style="color: #a31515">&#39;rxjs/observable/of&#39;</span>;
+<span style="color: #0000ff">import</span> { catchError, tap } from <span style="color: #a31515">&#39;rxjs/operators&#39;</span>;
+
+<span style="color: #0000ff">import</span> { LogService } from <span style="color: #a31515">&#39;./log.service&#39;</span>;
+<span style="color: #0000ff">import</span> { environment } from <span style="color: #a31515">&#39;../environments/environment&#39;</span>;
+
+<span style="color: #a31515">@Injectable()</span>
+
+<span style="color: #0000ff">export</span> <span style="color: #0000ff">class</span> EcpService {
+    <span style="color: #0000ff">private</span> href = <span style="color: #a31515">`</span>${environment.ecp.protocol}:<span style="color: #a31515">//</span>${environment.ecp.domain}<span style="color: #a31515">/aspx1/API.aspx`;</span>
+
+    <span style="color: #0000ff">constructor</span>(<span style="color: #0000ff">private</span> http: <span style="color: #2b91af">HttpClient</span>, <span style="color: #0000ff">public</span> log: <span style="color: #2b91af">LogService</span>) { }
+
+    get Log(): LogService {
+        <span style="color: #0000ff">return</span> <span style="color: #0000ff">this</span>.log;
+    }
+
+    Report&lt;T&gt;(distributor: <span style="color: #2b91af">string</span>, command: <span style="color: #2b91af">string</span>, query?: <span style="color: #2b91af">string</span>, parameters?: <span style="color: #2b91af">string</span>): Observable&lt;Report&lt;T&gt;&gt; {
+        <span style="color: #0000ff">if</span> (!query || query == <span style="color: #a31515">&#39;&#39;</span>) {
+            query = <span style="color: #a31515">&#39;&#39;</span>;
+        } <span style="color: #0000ff">else</span> {
+            query = <span style="color: #a31515">&#39;&amp;&#39;</span> + query;
+        }
+
+        <span style="color: #0000ff">if</span> (!parameters || parameters == <span style="color: #a31515">&#39;&#39;</span>) {
+            parameters = <span style="color: #a31515">&#39;&#39;</span>;
+        } <span style="color: #0000ff">else</span> {
+            parameters = <span style="color: #a31515">&#39;&amp;Parameters=&#39;</span> + parameters;
+        }
+
+        <span style="color: #0000ff">const</span> url = <span style="color: #a31515">`</span>${<span style="color: #0000ff">this</span>.href}<span style="color: #a31515">?Token=</span>${environment.ecp.token}<span style="color: #a31515">&amp;EncompassID=</span>${distributor}<span style="color: #a31515">&amp;Command=</span>${command}${query}${parameters}<span style="color: #a31515">`</span>;
+
+        <span style="color: #0000ff">this</span>.log.write(<span style="color: #a31515">&#39;Request Report&#39;</span>, url);
+
+        <span style="color: #0000ff">return</span> <span style="color: #0000ff">this</span>.http.get&lt;Report&lt;T&gt;&gt;(url);
+    }
+
+    Records&lt;T&gt;(distributor: <span style="color: #2b91af">string</span>, command: <span style="color: #2b91af">string</span>, query?: <span style="color: #2b91af">string</span>, parameters?: <span style="color: #2b91af">string</span>): Observable&lt;Records&lt;T&gt;&gt; {
+        <span style="color: #0000ff">if</span> (!query || query == <span style="color: #a31515">&#39;&#39;</span>) {
+            query = <span style="color: #a31515">&#39;&#39;</span>;
+        } <span style="color: #0000ff">else</span> {
+            query = <span style="color: #a31515">&#39;&amp;&#39;</span> + query;
+        }
+
+        <span style="color: #0000ff">if</span> (!parameters || parameters == <span style="color: #a31515">&#39;&#39;</span>) {
+            parameters = <span style="color: #a31515">&#39;&#39;</span>;
+        } <span style="color: #0000ff">else</span> {
+            parameters = <span style="color: #a31515">&#39;&amp;Parameters=&#39;</span> + parameters;
+        }
+
+        <span style="color: #0000ff">const</span> url = <span style="color: #a31515">`</span>${<span style="color: #0000ff">this</span>.href}<span style="color: #a31515">?Token=</span>${environment.ecp.token}<span style="color: #a31515">&amp;EncompassID=</span>${distributor}<span style="color: #a31515">&amp;Command=</span>${command}${query}${parameters}<span style="color: #a31515">`</span>;
+
+        <span style="color: #0000ff">this</span>.log.write(<span style="color: #a31515">&#39;Request Records&#39;</span>, url);
+
+        <span style="color: #0000ff">return</span> <span style="color: #0000ff">this</span>.http.get&lt;Records&lt;T&gt;&gt;(url);
+    }
+
+    Single&lt;T&gt;(distributor: <span style="color: #2b91af">string</span>, command: <span style="color: #2b91af">string</span>, query?: <span style="color: #2b91af">string</span>, parameters?: <span style="color: #2b91af">string</span>): Observable&lt;Record&lt;T&gt;&gt; {
+        <span style="color: #0000ff">if</span> (!query || query == <span style="color: #a31515">&#39;&#39;</span>) {
+            query = <span style="color: #a31515">&#39;&#39;</span>;
+        } <span style="color: #0000ff">else</span> {
+            query = <span style="color: #a31515">&#39;&amp;&#39;</span> + query;
+        }
+
+        <span style="color: #0000ff">if</span> (!parameters || parameters == <span style="color: #a31515">&#39;&#39;</span>) {
+            parameters = <span style="color: #a31515">&#39;&#39;</span>;
+        } <span style="color: #0000ff">else</span> {
+            parameters = <span style="color: #a31515">&#39;&amp;Parameters=&#39;</span> + parameters;
+        }
+
+        <span style="color: #0000ff">const</span> url = <span style="color: #a31515">`</span>${<span style="color: #0000ff">this</span>.href}<span style="color: #a31515">?Token=</span>${environment.ecp.token}<span style="color: #a31515">&amp;EncompassID=</span>${distributor}<span style="color: #a31515">&amp;Command=</span>${command}${query}${parameters}<span style="color: #a31515">`</span>;
+
+        <span style="color: #0000ff">this</span>.log.write(<span style="color: #a31515">&#39;Request Single Record&#39;</span>, url);
+
+        <span style="color: #0000ff">return</span> <span style="color: #0000ff">this</span>.http.get&lt;Record&lt;T&gt;&gt;(url);
+    }
+
+    Update&lt;T&gt;(distributor: <span style="color: #2b91af">string</span>, command: <span style="color: #2b91af">string</span>, data: <span style="color: #2b91af">T</span>): Observable&lt;any&gt; {
+        <span style="color: #0000ff">const</span> url = <span style="color: #a31515">`</span>${<span style="color: #0000ff">this</span>.href}<span style="color: #a31515">?Token=</span>${environment.ecp.token}<span style="color: #a31515">&amp;EncompassID=</span>${distributor}<span style="color: #a31515">&amp;Command=</span>${command}<span style="color: #a31515">`</span>;
+
+        <span style="color: #0000ff">this</span>.log.write(<span style="color: #a31515">&#39;Data&#39;</span>, JSON.stringify(data, <span style="color: #0000ff">null</span>, <span style="color: #a31515">&#39;    &#39;</span>));
+        <span style="color: #0000ff">this</span>.log.write(<span style="color: #a31515">&#39;Update&#39;</span>, url)
+
+        <span style="color: #0000ff">return</span> <span style="color: #0000ff">this</span>.http.post(url, data, {
+            headers: <span style="color: #2b91af">new</span> HttpHeaders({
+                <span style="color: #a31515">&#39;Content-Type&#39;</span>: <span style="color: #a31515">&#39;application/json&#39;</span>
+            }),
+            observe: <span style="color: #2b91af">null</span>,
+            params: <span style="color: #2b91af">null</span>,
+            reportProgress: <span style="color: #2b91af">null</span>,
+            responseType: <span style="color: #a31515">&#39;text&#39;</span>
+        }).pipe(tap(() =&gt; <span style="color: #0000ff">this</span>.log.write(<span style="color: #a31515">&#39;Update&#39;</span>, <span style="color: #a31515">&#39;success&#39;</span>)), catchError(<span style="color: #0000ff">this</span>.handleError(<span style="color: #a31515">&#39;Update&#39;</span>)));
+    }
+
+    <span style="color: #0000ff">private</span> handleError&lt;T&gt;(operation = <span style="color: #a31515">&#39;Unknown&#39;</span>, result?: <span style="color: #2b91af">T</span>) {
+        <span style="color: #0000ff">return</span> (error: <span style="color: #2b91af">any</span>): Observable&lt;T&gt; =&gt; {
+            console.error(error);
+            <span style="color: #0000ff">this</span>.log.write(operation, error.message);
+
+            <span style="color: #0000ff">return</span> of(result <span style="color: #0000ff">as</span> T);
+        };
+    }
+}
+
+<span style="color: #0000ff">export</span> <span style="color: #0000ff">interface</span> Report&lt;T&gt; {
+    Export: {
+        Report: {
+            Row: <span style="color: #2b91af">T</span>[];
+        }
+    }
+}
+
+<span style="color: #0000ff">export</span> <span style="color: #0000ff">interface</span> Record&lt;T&gt; {
+    Export: {
+        Table: {
+            RecordCount: <span style="color: #2b91af">number</span>;
+            Name: <span style="color: #2b91af">string</span>;
+            Row: <span style="color: #2b91af">T</span>;
+        }
+    }
+}
+
+<span style="color: #0000ff">export</span> <span style="color: #0000ff">interface</span> Records&lt;T&gt; {
+    Export: {
+        Table: {
+            RecordCount: <span style="color: #2b91af">number</span>;
+            Name: <span style="color: #2b91af">string</span>;
+            Row: <span style="color: #2b91af">T</span>[];
+        }
+    }
+}</pre>
+</p>
+<p>
+    Notice that
+    <b>Report()</b>,
+    <b>Records()</b> and
+    <b>Single()</b> all use the default get() call. By defaut the
+    <b>HttpClient</b> sends and recieves JSON data. The
+    <b>Update()</b> method is a bit different.
+</p>
+<p>
+    The
+    <b>Update()</b> method uses POST and sends JSON data. Since the Encompass API for imports returns HTML, we need to make
+    some changes. We need to tell the
+    <b>HttpClient</b> that we expect test not JSON. Without doing this the
+    <b>Update()</b> method will generate a JSON parse error. To do this you have to set the
+    <b>HttpOptions</b>.
+    <b>Content-Type</b> is the format the request is in. The
+    <b>responseType</b> is the type you expect to be returned. Srtting this to
+    <b>text</b> with disable the JSON parse.
+</p>
+
+<p class="note">
+    <span class="next-step">Next Step</span>
+    <br>
+    <br>Backend is done, let's setup the
+    <a href="/docs/product-editor/material">User Interface</a>.
+</p>

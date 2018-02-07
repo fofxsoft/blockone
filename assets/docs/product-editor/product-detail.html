@@ -1,0 +1,1238 @@
+<h1>Product Detail</h1>
+<div class="rule"></div>
+<p>
+    Now that you have a product list. You need a way to edit those products. You will use the GetProduct, GetBrand and UpdateProduct
+    Encompass API commands.
+</p>
+<p class="note">
+    If you haven't done this. Complete the
+    <a href="/docs/encompass-api">Encompass API</a> tutorial before continuing.
+</p>
+
+<h2>Create the Brand Model</h2>
+<p>
+    In the
+    <b>src/app/models/</b> folder create a new file named
+    <b>brand.model.ts</b>.
+</p>
+<p>
+    <div class="code-title">
+        src/app/models/brand.model.ts
+    </div>
+    <pre class="code"><span style="color: #0000ff">export</span> <span style="color: #0000ff">interface</span> Brand {
+    BrandID: <span style="color: #2b91af">string</span>;
+    Brand: <span style="color: #2b91af">string</span>;
+    BrandCode: <span style="color: #2b91af">string</span>;
+    Color: <span style="color: #2b91af">string</span>;
+}</pre>
+</p>
+<p>
+    This defines the data that is coming from the GetBrand API command.
+</p>
+
+<h2>Create the Product Detail Component</h2>
+<p>
+    Using the Angular CLI, generate a new component named
+    <b>product-detail</b>
+</p>
+<p class="terminal">
+    ng generate component product-detail
+</p>
+<p>
+    The CLI creates a new folder,
+    <b>src/app/product-detail/</b> and generates the three files of the
+    <b>ProductDetailComponent</b>.
+</p>
+<p>
+    The
+    <b>ProductDetailComponent</b> class file is as follows:
+</p>
+<p>
+    <div class="code-title">
+        src/app/product-detail/product-detail.component.ts
+    </div>
+    <pre class="code"><span style="color: #0000ff">import</span> { Component, OnInit } from <span style="color: #a31515">&#39;@angular/core&#39;</span>;
+
+<span style="color: #a31515">@Component</span>({
+  selector: <span style="color: #a31515">&#39;app-product-detail&#39;</span>,
+  templateUrl: <span style="color: #a31515">&#39;./product-detail.component.html&#39;</span>,
+  styleUrls: [<span style="color: #a31515">&#39;./product-detail.component.scss&#39;</span>]
+})
+
+<span style="color: #0000ff">export</span> <span style="color: #0000ff">class</span> ProductDetailComponent <span style="color: #0000ff">implements</span> OnInit {
+  <span style="color: #0000ff">constructor</span>() { }
+
+  ngOnInit() { }
+}</pre>
+</p>
+
+<h2>Enable the FormsModule</h2>
+<p>
+    This component will use forms, and then submit that form data to the UpdateProduct Encompass API command. This is not enabled
+    by default, you must import the
+    <b>FormsModule</b> in the
+    <b>AppModule</b>.
+</p>
+<p>
+    Angular needs to know how the pieces of your application fit together and what other files and libraries the app requires.
+    This information is called
+    <b>metadata</b> Some of the metadata is in the
+    <b>@Component</b> decorators that you added to your component classes. Other critical metadata is in @NgModule decorators.
+    The most important
+    <b>@NgModule</b> decorator annotates the top-level AppModule class. The Angular CLI generated an
+    <b>AppModule</b> class in
+    <b>src/app/app.module.ts</b> when it created the project. This is where you
+    <b>opt-in</b> to the
+    <b>FormsModule</b>.
+</p>
+<p>
+    Edit the
+    <b>src/app/app.module.ts</b> file.
+</p>
+<p>
+    <div class="code-title">
+        src/app/app.module.ts
+    </div>
+    <pre class="code"><span style="color: #0000ff">import</span> { NgModule } from <span style="color: #a31515">&#39;@angular/core&#39;</span>;
+<span style="color: #0000ff">import</span> { FormsModule } from <span style="color: #a31515">&#39;@angular/forms&#39;</span>
+<span style="color: #0000ff">import</span> { BrowserModule } from <span style="color: #a31515">&#39;@angular/platform-browser&#39;</span>;
+<span style="color: #0000ff">import</span> { HttpClientModule } from <span style="color: #a31515">&#39;@angular/common/http&#39;</span>
+<span style="color: #0000ff">import</span> { BrowserAnimationsModule } from <span style="color: #a31515">&#39;@angular/platform-browser/animations&#39;</span>;
+
+<span style="color: #0000ff">import</span> {
+    MatIconModule,
+    MatCardModule,
+    MatInputModule,
+    MatButtonModule,
+    MatMenuModule,
+    MatToolbarModule,
+    MatSidenavModule,
+    MatProgressSpinnerModule,
+    MatTableModule,
+    MatPaginatorModule
+} from <span style="color: #a31515">&#39;@angular/material&#39;</span>;
+
+<span style="color: #0000ff">import</span> { AppComponent } from <span style="color: #a31515">&#39;./app.component&#39;</span>;
+
+<span style="color: #0000ff">import</span> { EcpService } from <span style="color: #a31515">&#39;./ecp.service&#39;</span>;
+<span style="color: #0000ff">import</span> { LogService } from <span style="color: #a31515">&#39;./log.service&#39;</span>;
+
+<span style="color: #0000ff">import</span> { AppRoutingModule } from <span style="color: #a31515">&#39;./app-routing.module&#39;</span>;
+
+<span style="color: #0000ff">import</span> { NavComponent } from <span style="color: #a31515">&#39;./nav/nav.component&#39;</span>;
+<span style="color: #0000ff">import</span> { ProductListComponent } from <span style="color: #a31515">&#39;./product-list/product-list.component&#39;</span>;
+<span style="color: #0000ff">import</span> { ProductDetailComponent } from <span style="color: #a31515">&#39;./product-detail/product-detail.component&#39;</span>;
+
+<span style="color: #a31515">@NgModule</span>({
+    declarations: [
+        AppComponent,
+        NavComponent,
+        ProductListComponent,
+        ProductDetailComponent
+    ],
+    imports: [
+        BrowserModule,
+        HttpClientModule,
+        FormsModule,
+        BrowserAnimationsModule,
+        MatIconModule,
+        MatCardModule,
+        MatInputModule,
+        MatButtonModule,
+        MatMenuModule,
+        MatToolbarModule,
+        MatSidenavModule,
+        MatTableModule,
+        MatPaginatorModule,
+        MatProgressSpinnerModule,
+        AppRoutingModule
+    ],
+    providers: [
+        EcpService,
+        LogService
+    ],
+    bootstrap: [AppComponent]
+})
+
+<span style="color: #0000ff">export</span> <span style="color: #0000ff">class</span> AppModule { }</pre>
+</p>
+
+<h2>Setup the ProductDetailComponent</h2>
+<p>
+    Just like the
+    <b>ProductListComponent</b> you will need to enable the
+    <b>ActivatedRoute</b> however you will also need the
+    <b>Router</b> module too. You will also need the
+    <b>Input</b> module from
+    <b>@angular/code</b> and the
+    <b>Location</b> module from
+    <b>@angular/common</b>.
+</p>
+<p>
+    Edit the
+    <b>src/app/product-detail/product-detail.component.ts</b> file.
+</p>
+<p>
+    <div class="code-title">
+        src/app/product-detail/product-detail.component.ts
+    </div>
+    <pre class="code"><span style="color: #0000ff">import</span> { Component, OnInit, Input } from <span style="color: #a31515">&#39;@angular/core&#39;</span>;
+<span style="color: #0000ff">import</span> { Router, ActivatedRoute } from <span style="color: #a31515">&#39;@angular/router&#39;</span>;
+<span style="color: #0000ff">import</span> { Location } from <span style="color: #a31515">&#39;@angular/common&#39;</span>;
+
+<span style="color: #0000ff">import</span> { EcpService } from <span style="color: #a31515">&quot;../ecp.service&quot;</span>;
+
+<span style="color: #0000ff">import</span> { Product } from <span style="color: #a31515">&quot;../models/product.model&quot;</span>;
+<span style="color: #0000ff">import</span> { Brand } from <span style="color: #a31515">&quot;../models/brand.model&quot;</span>;
+
+<span style="color: #0000ff">export</span> <span style="color: #0000ff">interface</span> ViewModel {
+    Product: <span style="color: #2b91af">Product</span>;
+    Background: <span style="color: #2b91af">string</span>;
+    Color: <span style="color: #2b91af">string</span>;
+}
+
+<span style="color: #a31515">@Component</span>({
+    selector: <span style="color: #a31515">&#39;app-product-detail&#39;</span>,
+    templateUrl: <span style="color: #a31515">&#39;./product-detail.component.html&#39;</span>,
+    styleUrls: [<span style="color: #a31515">&#39;./product-detail.component.scss&#39;</span>]
+})
+
+<span style="color: #0000ff">export</span> <span style="color: #0000ff">class</span> ProductDetailComponent <span style="color: #0000ff">implements</span> OnInit {
+    <span style="color: #a31515">@Input</span>() data: <span style="color: #2b91af">ViewModel</span>;
+
+    isLoadingResults = <span style="color: #0000ff">true</span>;
+    page = +<span style="color: #0000ff">this</span>.route.snapshot.paramMap.get(<span style="color: #a31515">&#39;page&#39;</span>);
+
+    <span style="color: #0000ff">constructor</span>(<span style="color: #0000ff">public</span> ECP: <span style="color: #2b91af">EcpService</span>, <span style="color: #0000ff">private</span> route: <span style="color: #2b91af">ActivatedRoute</span>, <span style="color: #0000ff">private</span> router: <span style="color: #2b91af">Router</span>, <span style="color: #0000ff">private</span> location: <span style="color: #2b91af">Location</span>) { }
+
+    ngOnInit() { }
+}</pre>
+</p>
+<p>
+    You also added the
+    <b>@Input</b> directive. This is where the data is stored that you will edit and submit to the UpdateProduct command.
+</p>
+<p>
+    You also added the
+    <b>page</b> variable. This keeps track of the page you were on in the product list. It is helpfull when you go back to the
+    product list.
+</p>
+<p>
+    The
+    <b>isLoadingResults</b> variable controlls the loading spinner.
+</p>
+
+<h2>Add Functions to Handle the Brand Color</h2>
+<p>
+    Colors on the Encompass Brands table are names. You will need to convert these color names to HEX color values. Another nice
+    feature is the automatic text color calculation. Black test is not always readable on some darker background colors.
+    This function will automatically determine the brightness of the color. If the background is too dark, it will return
+    white.
+</p>
+<p>
+    Edit the
+    <b>src/app/product-detail/product-detail.component.ts</b> file.
+</p>
+<p>
+    <div class="code-title">
+        src/app/product-detail/product-detail.component.ts
+    </div>
+    <pre class="code"><span style="color: #0000ff">import</span> { Component, OnInit, Input } from <span style="color: #a31515">&#39;@angular/core&#39;</span>;
+<span style="color: #0000ff">import</span> { Router, ActivatedRoute } from <span style="color: #a31515">&#39;@angular/router&#39;</span>;
+<span style="color: #0000ff">import</span> { Location } from <span style="color: #a31515">&#39;@angular/common&#39;</span>;
+
+<span style="color: #0000ff">import</span> { EcpService } from <span style="color: #a31515">&quot;../ecp.service&quot;</span>;
+
+<span style="color: #0000ff">import</span> { Product } from <span style="color: #a31515">&quot;../models/product.model&quot;</span>;
+<span style="color: #0000ff">import</span> { Brand } from <span style="color: #a31515">&quot;../models/brand.model&quot;</span>;
+
+<span style="color: #0000ff">export</span> <span style="color: #0000ff">interface</span> ViewModel {
+    Product: <span style="color: #2b91af">Product</span>;
+    Background: <span style="color: #2b91af">string</span>;
+    Color: <span style="color: #2b91af">string</span>;
+}
+
+<span style="color: #a31515">@Component</span>({
+    selector: <span style="color: #a31515">&#39;app-product-detail&#39;</span>,
+    templateUrl: <span style="color: #a31515">&#39;./product-detail.component.html&#39;</span>,
+    styleUrls: [<span style="color: #a31515">&#39;./product-detail.component.scss&#39;</span>]
+})
+
+<span style="color: #0000ff">export</span> <span style="color: #0000ff">class</span> ProductDetailComponent <span style="color: #0000ff">implements</span> OnInit {
+    <span style="color: #a31515">@Input</span>() data: <span style="color: #2b91af">ViewModel</span>;
+
+    isLoadingResults = <span style="color: #0000ff">true</span>;
+    page = +<span style="color: #0000ff">this</span>.route.snapshot.paramMap.get(<span style="color: #a31515">&#39;page&#39;</span>);
+
+    <span style="color: #0000ff">constructor</span>(<span style="color: #0000ff">public</span> ECP: <span style="color: #2b91af">EcpService</span>, <span style="color: #0000ff">private</span> route: <span style="color: #2b91af">ActivatedRoute</span>, <span style="color: #0000ff">private</span> router: <span style="color: #2b91af">Router</span>, <span style="color: #0000ff">private</span> location: <span style="color: #2b91af">Location</span>) { }
+
+    ngOnInit() { }
+
+    cancel(): <span style="color: #0000ff">void</span> {
+        <span style="color: #0000ff">this</span>.router.navigateByUrl(<span style="color: #a31515">&#39;/products/&#39;</span> + <span style="color: #0000ff">this</span>.page);
+    }
+
+    save(): <span style="color: #0000ff">void</span> {
+        <span style="color: #0000ff">this</span>.isLoadingResults = <span style="color: #0000ff">true</span>;
+
+        <span style="color: #0000ff">this</span>.ECP.Update&lt;Product&gt;(<span style="color: #a31515">&#39;[ENCOMPASS_ID]&#39;</span>, <span style="color: #a31515">&#39;UpdateProduct&#39;</span>, <span style="color: #0000ff">this</span>.data.Product).subscribe(() =&gt; <span style="color: #0000ff">this</span>.cancel());
+    }
+
+    ForegroundFromBackground(background: <span style="color: #2b91af">string</span>): <span style="color: #2b91af">string</span> {
+        <span style="color: #0000ff">var</span> rgb: <span style="color: #2b91af">RegExpExecArray</span> = <span style="color: #a31515">/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i</span>.exec(background);
+
+        <span style="color: #0000ff">var</span> color = {
+            r: <span style="color: #2b91af">parseInt</span>(rgb[1], 16),
+            g: <span style="color: #2b91af">parseInt</span>(rgb[2], 16),
+            b: <span style="color: #2b91af">parseInt</span>(rgb[3], 16)
+        }
+
+        <span style="color: #0000ff">var</span> weights = {
+            r: (color.r * 299),
+            g: (color.g * 587),
+            b: (color.b * 114)
+        }
+
+        <span style="color: #0000ff">var</span> brightness = Math.round(color.r + color.g + color.b * 114) / 1000;
+        <span style="color: #0000ff">var</span> foreground = (brightness &gt; 125) ? <span style="color: #a31515">&quot;000000&quot;</span> : <span style="color: #a31515">&quot;ffffff&quot;</span>;
+
+        <span style="color: #0000ff">this</span>.ECP.Log.write(<span style="color: #a31515">&#39;Foreground Contrast Color&#39;</span>, <span style="color: #a31515">`</span>${background} <span style="color: #a31515">rgb(</span>${color.r}<span style="color: #a31515">,</span> ${color.g}<span style="color: #a31515">,</span> ${color.b}<span style="color: #a31515">)</span> <span style="color: #a31515">hst(</span>${weights.r / 1000}<span style="color: #a31515">,</span> ${weights.g / 1000}<span style="color: #a31515">,</span> ${weights.b / 1000}<span style="color: #a31515">,</span> ${brightness}<span style="color: #a31515">)</span> <span style="color: #a31515">-&gt; #</span>${foreground}<span style="color: #a31515">`</span>);
+
+        <span style="color: #0000ff">return</span> foreground;
+    }
+
+    ColorToHex(name: <span style="color: #2b91af">string</span>): <span style="color: #2b91af">string</span> {
+        <span style="color: #0000ff">switch</span> (name) {
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Blue&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;0000ff&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Navy Blue&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;000080&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Slate Blue&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;483d8b&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Steel Blue&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;4682b4&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Sky Blue&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;00bfff&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Forest Green&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;228b22&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Olive Green&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;556b2f&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Sea Green&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;2e8b57&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Lime Green&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;32cd32&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Yellow Green&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;9acd32&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Gold&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;ffd700&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Golden Rod&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;daa520&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Medium Yellow&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;cdcd00&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Dark Yellow&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;8b8b00&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Khaki&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;bdb76b&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Saddle Brown&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;8b4513&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Brown&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;cd853f&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Chocolate Brown&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;d2691e&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Orange&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;ff8c00&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Dark Orange&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;cd3700&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Orange Red&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;ff4500&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Red&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;ff0000&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Tomato Red&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;ff6347&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Firebrick Red&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;b22222&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Indian Red&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;cd5c5c&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Salmon&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;ee8262&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Pink&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;ff1493&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Dark Pink&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;8b5f65&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Rosy Brown&quot;</span>:
+               <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;bc8f8f&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Maroon&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;b03060&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Violet Red&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;d02090&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Magenta&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;ff00ff&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Violet&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;ee82ee&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Orchid Purple&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;ba55d3&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Purple&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;a020f0&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Medium Purple&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;9370db&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Black&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;000000&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Light Grey&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;363636&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Dark Grey&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;8b8989&quot;</span>;
+
+            <span style="color: #0000ff">default</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;ffffff&quot;</span>;
+        }
+    }
+}</pre>
+</p>
+<p>
+    We also took the opportunity to add the
+    <b>save()</b> and
+    <b>cancel()</b> functions. These are used for the
+    <b>Save</b> and
+    <b>Cancel</b> buttons.
+</p>
+
+<h2>Fetch the Data from the Encompass API</h2>
+<p>
+    Notice that the
+    <b>ngOnInit()</b> function is empty. This is where you will need to fetch the data from teh Encompass API and set the
+    <b>ViewModel</b>.
+</p>
+<p>
+    Edit the
+    <b>src/app/product-detail/product-detail.component.ts</b> file.
+</p>
+<p>
+    <div class="code-title">
+        src/app/product-detail/product-detail.component.ts
+    </div>
+    <pre class="code"><span style="color: #0000ff">import</span> { Component, OnInit, Input } from <span style="color: #a31515">&#39;@angular/core&#39;</span>;
+<span style="color: #0000ff">import</span> { Router, ActivatedRoute } from <span style="color: #a31515">&#39;@angular/router&#39;</span>;
+<span style="color: #0000ff">import</span> { Location } from <span style="color: #a31515">&#39;@angular/common&#39;</span>;
+
+<span style="color: #0000ff">import</span> { EcpService } from <span style="color: #a31515">&quot;../ecp.service&quot;</span>;
+
+<span style="color: #0000ff">import</span> { Product } from <span style="color: #a31515">&quot;../models/product.model&quot;</span>;
+<span style="color: #0000ff">import</span> { Brand } from <span style="color: #a31515">&quot;../models/brand.model&quot;</span>;
+
+<span style="color: #0000ff">export</span> <span style="color: #0000ff">interface</span> ViewModel {
+    Product: <span style="color: #2b91af">Product</span>;
+    Background: <span style="color: #2b91af">string</span>;
+    Color: <span style="color: #2b91af">string</span>;
+}
+
+<span style="color: #a31515">@Component</span>({
+    selector: <span style="color: #a31515">&#39;app-product-detail&#39;</span>,
+    templateUrl: <span style="color: #a31515">&#39;./product-detail.component.html&#39;</span>,
+    styleUrls: [<span style="color: #a31515">&#39;./product-detail.component.scss&#39;</span>]
+})
+
+<span style="color: #0000ff">export</span> <span style="color: #0000ff">class</span> ProductDetailComponent <span style="color: #0000ff">implements</span> OnInit {
+    <span style="color: #a31515">@Input</span>() data: <span style="color: #2b91af">ViewModel</span>;
+
+    isLoadingResults = <span style="color: #0000ff">true</span>;
+    page = +<span style="color: #0000ff">this</span>.route.snapshot.paramMap.get(<span style="color: #a31515">&#39;page&#39;</span>);
+
+    <span style="color: #0000ff">constructor</span>(<span style="color: #0000ff">public</span> ECP: <span style="color: #2b91af">EcpService</span>, <span style="color: #0000ff">private</span> route: <span style="color: #2b91af">ActivatedRoute</span>, <span style="color: #0000ff">private</span> router: <span style="color: #2b91af">Router</span>, <span style="color: #0000ff">private</span> location: <span style="color: #2b91af">Location</span>) { }
+
+    ngOnInit() {
+        <span style="color: #0000ff">this</span>.ECP.Single&lt;Product&gt;(<span style="color: #a31515">&#39;[ENCOMPASS_ID]&#39;</span>, <span style="color: #a31515">&#39;GetProduct&#39;</span>, <span style="color: #0000ff">null</span>, <span style="color: #a31515">`F:ProductID~V:$</span>{+<span style="color: #0000ff">this</span>.route.snapshot.paramMap.get(<span style="color: #a31515">&#39;id&#39;</span>)}<span style="color: #a31515">~O:E`</span>).subscribe(product =&gt; {
+            <span style="color: #0000ff">this</span>.ECP.Single&lt;Brand&gt;(<span style="color: #a31515">&#39;[ENCOPASS_ID]&#39;</span>, <span style="color: #a31515">&#39;GetBrand&#39;</span>, <span style="color: #0000ff">null</span>, <span style="color: #a31515">`F:Brand~V:$</span>{product.Export.Table.Row.Brand}<span style="color: #a31515">~O:E`</span>).subscribe(brand =&gt; {
+                <span style="color: #0000ff">var</span> background: <span style="color: #2b91af">string</span> = <span style="color: #0000ff">this</span>.ColorToHex(brand.Export.Table.Row.Color);
+
+                <span style="color: #0000ff">this</span>.data = {
+                    Product: <span style="color: #2b91af">product.Export.Table.Row</span>,
+                    Background: <span style="color: #a31515">`card-title-bg-</span>${background}<span style="color: #a31515">`</span>,
+                    Color: <span style="color: #a31515">`card-title-fg-</span>${<span style="color: #0000ff">this</span>.ForegroundFromBackground(<span style="color: #a31515">`#</span>${background}<span style="color: #a31515">`</span>)}<span style="color: #a31515">`</span>
+                };
+
+                <span style="color: #0000ff">this</span>.data.Product.Price = <span style="color: #0000ff">this</span>.data.Product.Price.replace(<span style="color: #a31515">/[^\d.-]/g</span>, <span style="color: #a31515">&#39;&#39;</span>);
+                <span style="color: #0000ff">this</span>.data.Product.CasePrice = <span style="color: #0000ff">this</span>.data.Product.CasePrice.replace(<span style="color: #a31515">/[^\d.-]/g</span>, <span style="color: #a31515">&#39;&#39;</span>);
+
+                <span style="color: #0000ff">this</span>.isLoadingResults = <span style="color: #0000ff">false</span>;
+            });
+        });
+    }
+
+    cancel(): <span style="color: #0000ff">void</span> {
+        <span style="color: #0000ff">this</span>.router.navigateByUrl(<span style="color: #a31515">&#39;/products/&#39;</span> + <span style="color: #0000ff">this</span>.page);
+    }
+
+    save(): <span style="color: #0000ff">void</span> {
+        <span style="color: #0000ff">this</span>.isLoadingResults = <span style="color: #0000ff">true</span>;
+
+        <span style="color: #0000ff">this</span>.ECP.Update&lt;Product&gt;(<span style="color: #a31515">&#39;[ENCOMPASS_ID]&#39;</span>, <span style="color: #a31515">&#39;UpdateProduct&#39;</span>, <span style="color: #0000ff">this</span>.data.Product).subscribe(() =&gt; <span style="color: #0000ff">this</span>.cancel());
+    }
+
+    ForegroundFromBackground(background: <span style="color: #2b91af">string</span>): <span style="color: #2b91af">string</span> {
+        <span style="color: #0000ff">var</span> rgb: <span style="color: #2b91af">RegExpExecArray</span> = <span style="color: #a31515">/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i</span>.exec(background);
+
+        <span style="color: #0000ff">var</span> color = {
+            r: <span style="color: #2b91af">parseInt</span>(rgb[1], 16),
+            g: <span style="color: #2b91af">parseInt</span>(rgb[2], 16),
+            b: <span style="color: #2b91af">parseInt</span>(rgb[3], 16)
+        }
+
+        <span style="color: #0000ff">var</span> weights = {
+            r: (color.r * 299),
+            g: (color.g * 587),
+            b: (color.b * 114)
+        }
+
+        <span style="color: #0000ff">var</span> brightness = Math.round(color.r + color.g + color.b * 114) / 1000;
+        <span style="color: #0000ff">var</span> foreground = (brightness &gt; 125) ? <span style="color: #a31515">&quot;000000&quot;</span> : <span style="color: #a31515">&quot;ffffff&quot;</span>;
+
+        <span style="color: #0000ff">this</span>.ECP.Log.write(<span style="color: #a31515">&#39;Foreground Contrast Color&#39;</span>, <span style="color: #a31515">`</span>${background} <span style="color: #a31515">rgb(</span>${color.r}<span style="color: #a31515">,</span> ${color.g}<span style="color: #a31515">,</span> ${color.b}<span style="color: #a31515">)</span> <span style="color: #a31515">hst(</span>${weights.r / 1000}<span style="color: #a31515">,</span> ${weights.g / 1000}<span style="color: #a31515">,</span> ${weights.b / 1000}<span style="color: #a31515">,</span> ${brightness}<span style="color: #a31515">)</span> <span style="color: #a31515">-&gt; #</span>${foreground}<span style="color: #a31515">`</span>);
+
+        <span style="color: #0000ff">return</span> foreground;
+    }
+
+    ColorToHex(name: <span style="color: #2b91af">string</span>): <span style="color: #2b91af">string</span> {
+        <span style="color: #0000ff">switch</span> (name) {
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Blue&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;0000ff&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Navy Blue&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;000080&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Slate Blue&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;483d8b&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Steel Blue&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;4682b4&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Sky Blue&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;00bfff&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Forest Green&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;228b22&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Olive Green&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;556b2f&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Sea Green&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;2e8b57&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Lime Green&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;32cd32&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Yellow Green&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;9acd32&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Gold&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;ffd700&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Golden Rod&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;daa520&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Medium Yellow&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;cdcd00&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Dark Yellow&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;8b8b00&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Khaki&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;bdb76b&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Saddle Brown&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;8b4513&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Brown&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;cd853f&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Chocolate Brown&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;d2691e&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Orange&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;ff8c00&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Dark Orange&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;cd3700&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Orange Red&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;ff4500&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Red&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;ff0000&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Tomato Red&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;ff6347&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Firebrick Red&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;b22222&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Indian Red&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;cd5c5c&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Salmon&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;ee8262&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Pink&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;ff1493&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Dark Pink&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;8b5f65&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Rosy Brown&quot;</span>:
+               <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;bc8f8f&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Maroon&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;b03060&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Violet Red&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;d02090&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Magenta&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;ff00ff&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Violet&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;ee82ee&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Orchid Purple&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;ba55d3&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Purple&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;a020f0&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Medium Purple&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;9370db&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Black&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;000000&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Light Grey&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;363636&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Dark Grey&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;8b8989&quot;</span>;
+
+            <span style="color: #0000ff">default</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;ffffff&quot;</span>;
+        }
+    }
+}</pre>
+</p>
+<p>
+    Here you called the
+    <b>EcpService.Single()</b> function. First to get the product and second to get the brand. You can not get the brand until
+    you have the product, so the second
+    <b>Single()</b> call is defined in the
+    <b>Observable</b> of the first.
+</p>
+
+<h2>Define the View</h2>
+<p>
+    Edit the
+    <b>src/app/product-detail/product-detail.component.ts</b> file.
+</p>
+<p>
+    <div class="code-title">
+        src/app/product-detail/product-detail.component.ts
+    </div>
+    <pre class="code"><span style="color: #0000ff">import</span> { Component, OnInit, Input } from <span style="color: #a31515">&#39;@angular/core&#39;</span>;
+<span style="color: #0000ff">import</span> { Router, ActivatedRoute } from <span style="color: #a31515">&#39;@angular/router&#39;</span>;
+<span style="color: #0000ff">import</span> { Location } from <span style="color: #a31515">&#39;@angular/common&#39;</span>;
+
+<span style="color: #0000ff">import</span> { EcpService } from <span style="color: #a31515">&quot;../ecp.service&quot;</span>;
+
+<span style="color: #0000ff">import</span> { Product } from <span style="color: #a31515">&quot;../models/product.model&quot;</span>;
+<span style="color: #0000ff">import</span> { Brand } from <span style="color: #a31515">&quot;../models/brand.model&quot;</span>;
+
+<span style="color: #0000ff">export</span> <span style="color: #0000ff">interface</span> ViewModel {
+    Product: <span style="color: #2b91af">Product</span>;
+    Background: <span style="color: #2b91af">string</span>;
+    Color: <span style="color: #2b91af">string</span>;
+}
+
+<span style="color: #a31515">@Component</span>({
+    selector: <span style="color: #a31515">&#39;app-product-detail&#39;</span>,
+    templateUrl: <span style="color: #a31515">&#39;./product-detail.component.html&#39;</span>,
+    styleUrls: [<span style="color: #a31515">&#39;./product-detail.component.scss&#39;</span>]
+})
+
+<span style="color: #0000ff">export</span> <span style="color: #0000ff">class</span> ProductDetailComponent <span style="color: #0000ff">implements</span> OnInit {
+    <span style="color: #a31515">@Input</span>() data: <span style="color: #2b91af">ViewModel</span>;
+
+    isLoadingResults = <span style="color: #0000ff">true</span>;
+    page = +<span style="color: #0000ff">this</span>.route.snapshot.paramMap.get(<span style="color: #a31515">&#39;page&#39;</span>);
+
+    <span style="color: #0000ff">constructor</span>(<span style="color: #0000ff">public</span> ECP: <span style="color: #2b91af">EcpService</span>, <span style="color: #0000ff">private</span> route: <span style="color: #2b91af">ActivatedRoute</span>, <span style="color: #0000ff">private</span> router: <span style="color: #2b91af">Router</span>, <span style="color: #0000ff">private</span> location: <span style="color: #2b91af">Location</span>) { }
+
+    ngOnInit() { }
+
+    cancel(): <span style="color: #0000ff">void</span> {
+        <span style="color: #0000ff">this</span>.router.navigateByUrl(<span style="color: #a31515">&#39;/products/&#39;</span> + <span style="color: #0000ff">this</span>.page);
+    }
+
+    save(): <span style="color: #0000ff">void</span> {
+        <span style="color: #0000ff">this</span>.isLoadingResults = <span style="color: #0000ff">true</span>;
+
+        <span style="color: #0000ff">this</span>.ECP.Update&lt;Product&gt;(<span style="color: #a31515">&#39;[ENCOMPASS_ID]&#39;</span>, <span style="color: #a31515">&#39;UpdateProduct&#39;</span>, <span style="color: #0000ff">this</span>.data.Product).subscribe(() =&gt; <span style="color: #0000ff">this</span>.cancel());
+    }
+
+    ForegroundFromBackground(background: <span style="color: #2b91af">string</span>): <span style="color: #2b91af">string</span> {
+        <span style="color: #0000ff">var</span> rgb: <span style="color: #2b91af">RegExpExecArray</span> = <span style="color: #a31515">/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i</span>.exec(background);
+
+        <span style="color: #0000ff">var</span> color = {
+            r: <span style="color: #2b91af">parseInt</span>(rgb[1], 16),
+            g: <span style="color: #2b91af">parseInt</span>(rgb[2], 16),
+            b: <span style="color: #2b91af">parseInt</span>(rgb[3], 16)
+        }
+
+        <span style="color: #0000ff">var</span> weights = {
+            r: (color.r * 299),
+            g: (color.g * 587),
+            b: (color.b * 114)
+        }
+
+        <span style="color: #0000ff">var</span> brightness = Math.round(color.r + color.g + color.b * 114) / 1000;
+        <span style="color: #0000ff">var</span> foreground = (brightness &gt; 125) ? <span style="color: #a31515">&quot;000000&quot;</span> : <span style="color: #a31515">&quot;ffffff&quot;</span>;
+
+        <span style="color: #0000ff">this</span>.ECP.Log.write(<span style="color: #a31515">&#39;Foreground Contrast Color&#39;</span>, <span style="color: #a31515">`</span>${background} <span style="color: #a31515">rgb(</span>${color.r}<span style="color: #a31515">,</span> ${color.g}<span style="color: #a31515">,</span> ${color.b}<span style="color: #a31515">)</span> <span style="color: #a31515">hst(</span>${weights.r / 1000}<span style="color: #a31515">,</span> ${weights.g / 1000}<span style="color: #a31515">,</span> ${weights.b / 1000}<span style="color: #a31515">,</span> ${brightness}<span style="color: #a31515">)</span> <span style="color: #a31515">-&gt; #</span>${foreground}<span style="color: #a31515">`</span>);
+
+        <span style="color: #0000ff">return</span> foreground;
+    }
+
+    ColorToHex(name: <span style="color: #2b91af">string</span>): <span style="color: #2b91af">string</span> {
+        <span style="color: #0000ff">switch</span> (name) {
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Blue&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;0000ff&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Navy Blue&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;000080&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Slate Blue&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;483d8b&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Steel Blue&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;4682b4&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Sky Blue&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;00bfff&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Forest Green&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;228b22&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Olive Green&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;556b2f&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Sea Green&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;2e8b57&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Lime Green&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;32cd32&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Yellow Green&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;9acd32&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Gold&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;ffd700&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Golden Rod&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;daa520&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Medium Yellow&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;cdcd00&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Dark Yellow&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;8b8b00&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Khaki&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;bdb76b&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Saddle Brown&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;8b4513&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Brown&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;cd853f&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Chocolate Brown&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;d2691e&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Orange&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;ff8c00&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Dark Orange&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;cd3700&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Orange Red&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;ff4500&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Red&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;ff0000&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Tomato Red&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;ff6347&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Firebrick Red&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;b22222&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Indian Red&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;cd5c5c&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Salmon&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;ee8262&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Pink&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;ff1493&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Dark Pink&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;8b5f65&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Rosy Brown&quot;</span>:
+               <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;bc8f8f&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Maroon&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;b03060&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Violet Red&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;d02090&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Magenta&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;ff00ff&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Violet&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;ee82ee&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Orchid Purple&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;ba55d3&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Purple&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;a020f0&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Medium Purple&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;9370db&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Black&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;000000&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Light Grey&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;363636&quot;</span>;
+
+            <span style="color: #0000ff">case</span> <span style="color: #a31515">&quot;Dark Grey&quot;</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;8b8989&quot;</span>;
+
+            <span style="color: #0000ff">default</span>:
+                <span style="color: #0000ff">return</span> <span style="color: #a31515">&quot;ffffff&quot;</span>;
+        }
+    }
+}</pre>
+</p>
+<p>
+    We also took the opportunity to add the
+    <b>save()</b> and
+    <b>cancel()</b> functions. These are used for the
+    <b>Save</b> and
+    <b>Cancel</b> buttons.
+</p>
+
+<h2>Fetch the Data from the Encompass API</h2>
+<p>
+    Notice that the
+    <b>ngOnInit()</b> function is empty. This is where you will need to fetch the data from teh Encompass API and set the
+    <b>ViewModel</b>.
+</p>
+<p>
+    Edit the
+    <b>src/app/product-detail/product-detail.component.html</b> file.
+</p>
+<p>
+    <div class="code-title">
+        src/app/product-detail/product-detail.component.html
+    </div>
+    <pre class="code"><span style="color: #8B008B; font-weight: bold">&lt;div</span> <span style="color: #658b00">class=</span><span style="color: #CD5555">&quot;loading-shade&quot;</span> <span style="color: #a61717; background-color: #e3d2d2">*</span><span style="color: #658b00">ngIf=</span><span style="color: #CD5555">&quot;isLoadingResults&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+    <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-spinner</span> <span style="color: #a61717; background-color: #e3d2d2">*</span><span style="color: #658b00">ngIf=</span><span style="color: #CD5555">&quot;isLoadingResults&quot;</span> <span style="color: #658b00">color=</span><span style="color: #CD5555">&quot;accent&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span><span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-spinner&gt;
+<span style="color: #8B008B; font-weight: bold">&lt;/div&gt;</span>
+<span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-card</span> <span style="color: #658b00">class=</span><span style="color: #CD5555">&quot;product-card&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+    <span style="color: #8B008B; font-weight: bold">&lt;section</span> <span style="color: #a61717; background-color: #e3d2d2">*</span><span style="color: #658b00">ngIf=</span><span style="color: #CD5555">&quot;data &amp;&amp; data.Product &amp;&amp; !isLoadingResults&quot;</span> <span style="color: #658b00">mat-card-image</span> <span style="color: #658b00">class=</span><span style="color: #CD5555">&quot;product-media {{ data.Background }} {{ data.Color }}&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+        <span style="color: #8B008B; font-weight: bold">&lt;h1&gt;</span>{{ data.Product.Package }}<span style="color: #8B008B; font-weight: bold">&lt;/h1&gt;</span>
+        {{ data.Product.Brand }} - {{ data.Product.Supplier }}
+    <span style="color: #8B008B; font-weight: bold">&lt;/section&gt;</span>
+    <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-card-content</span> <span style="color: #a61717; background-color: #e3d2d2">*</span><span style="color: #658b00">ngIf=</span><span style="color: #CD5555">&quot;data &amp;&amp; data.Product &amp;&amp; !isLoadingResults&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+        <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-form-field</span> <span style="color: #658b00">class=</span><span style="color: #CD5555">&quot;full-width&quot;</span> <span style="color: #658b00">color=</span><span style="color: #CD5555">&quot;accent&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+            <span style="color: #8B008B; font-weight: bold">&lt;input</span> <span style="color: #658b00">matInput</span> <span style="color: #a61717; background-color: #e3d2d2">[(</span><span style="color: #658b00">ngModel</span><span style="color: #a61717; background-color: #e3d2d2">)]=&quot;</span><span style="color: #658b00">data</span><span style="color: #a61717; background-color: #e3d2d2">.</span><span style="color: #658b00">Product</span><span style="color: #a61717; background-color: #e3d2d2">.</span><span style="color: #658b00">ProductName</span><span style="color: #a61717; background-color: #e3d2d2">&quot;</span> <span style="color: #658b00">placeholder=</span><span style="color: #CD5555">&quot;Name&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+        <span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-form-field&gt;
+        <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-form-field</span> <span style="color: #658b00">color=</span><span style="color: #CD5555">&quot;accent&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+            <span style="color: #8B008B; font-weight: bold">&lt;input</span> <span style="color: #658b00">matInput</span> <span style="color: #a61717; background-color: #e3d2d2">[(</span><span style="color: #658b00">ngModel</span><span style="color: #a61717; background-color: #e3d2d2">)]=&quot;</span><span style="color: #658b00">data</span><span style="color: #a61717; background-color: #e3d2d2">.</span><span style="color: #658b00">Product</span><span style="color: #a61717; background-color: #e3d2d2">.</span><span style="color: #658b00">Brand</span><span style="color: #a61717; background-color: #e3d2d2">&quot;</span> <span style="color: #658b00">placeholder=</span><span style="color: #CD5555">&quot;Brand&quot;</span> <span style="color: #658b00">disabled</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+        <span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-form-field&gt;
+        <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-form-field</span> <span style="color: #658b00">color=</span><span style="color: #CD5555">&quot;accent&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+            <span style="color: #8B008B; font-weight: bold">&lt;input</span> <span style="color: #658b00">matInput</span> <span style="color: #a61717; background-color: #e3d2d2">[(</span><span style="color: #658b00">ngModel</span><span style="color: #a61717; background-color: #e3d2d2">)]=&quot;</span><span style="color: #658b00">data</span><span style="color: #a61717; background-color: #e3d2d2">.</span><span style="color: #658b00">Product</span><span style="color: #a61717; background-color: #e3d2d2">.</span><span style="color: #658b00">Package</span><span style="color: #a61717; background-color: #e3d2d2">&quot;</span> <span style="color: #658b00">placeholder=</span><span style="color: #CD5555">&quot;Package&quot;</span> <span style="color: #658b00">disabled</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+        <span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-form-field&gt;
+        <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-form-field</span> <span style="color: #658b00">color=</span><span style="color: #CD5555">&quot;accent&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+            <span style="color: #8B008B; font-weight: bold">&lt;input</span> <span style="color: #658b00">matInput</span> <span style="color: #a61717; background-color: #e3d2d2">[(</span><span style="color: #658b00">ngModel</span><span style="color: #a61717; background-color: #e3d2d2">)]=&quot;</span><span style="color: #658b00">data</span><span style="color: #a61717; background-color: #e3d2d2">.</span><span style="color: #658b00">Product</span><span style="color: #a61717; background-color: #e3d2d2">.</span><span style="color: #658b00">Supplier</span><span style="color: #a61717; background-color: #e3d2d2">&quot;</span> <span style="color: #658b00">placeholder=</span><span style="color: #CD5555">&quot;Supplier&quot;</span> <span style="color: #658b00">disabled</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+        <span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-form-field&gt;
+        <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-form-field</span> <span style="color: #a61717; background-color: #e3d2d2">*</span><span style="color: #658b00">ngIf=</span><span style="color: #CD5555">&quot;data.Product.SupplierProductNum&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+            <span style="color: #8B008B; font-weight: bold">&lt;input</span> <span style="color: #658b00">matInput</span> <span style="color: #a61717; background-color: #e3d2d2">[(</span><span style="color: #658b00">ngModel</span><span style="color: #a61717; background-color: #e3d2d2">)]=&quot;</span><span style="color: #658b00">data</span><span style="color: #a61717; background-color: #e3d2d2">.</span><span style="color: #658b00">Product</span><span style="color: #a61717; background-color: #e3d2d2">.</span><span style="color: #658b00">SupplierProductNum</span><span style="color: #a61717; background-color: #e3d2d2">&quot;</span> <span style="color: #658b00">placeholder=</span><span style="color: #CD5555">&quot;Supplier Product Number&quot;</span> <span style="color: #658b00">disabled</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+        <span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-form-field&gt;
+        <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-form-field</span> <span style="color: #a61717; background-color: #e3d2d2">*</span><span style="color: #658b00">ngIf=</span><span style="color: #CD5555">&quot;!data.Product.SupplierProductNum&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+            <span style="color: #8B008B; font-weight: bold">&lt;input</span> <span style="color: #658b00">matInput</span> <span style="color: #a61717; background-color: #e3d2d2">[(</span><span style="color: #658b00">ngModel</span><span style="color: #a61717; background-color: #e3d2d2">)]=&quot;</span><span style="color: #658b00">data</span><span style="color: #a61717; background-color: #e3d2d2">.</span><span style="color: #658b00">Product</span><span style="color: #a61717; background-color: #e3d2d2">.</span><span style="color: #658b00">SupplierProductNum</span><span style="color: #a61717; background-color: #e3d2d2">&quot;</span> <span style="color: #658b00">placeholder=</span><span style="color: #CD5555">&quot;Supplier Product Number&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+        <span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-form-field&gt;
+        <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-form-field</span> <span style="color: #658b00">color=</span><span style="color: #CD5555">&quot;accent&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+            <span style="color: #8B008B; font-weight: bold">&lt;input</span> <span style="color: #658b00">matInput</span> <span style="color: #a61717; background-color: #e3d2d2">[(</span><span style="color: #658b00">ngModel</span><span style="color: #a61717; background-color: #e3d2d2">)]=&quot;</span><span style="color: #658b00">data</span><span style="color: #a61717; background-color: #e3d2d2">.</span><span style="color: #658b00">Product</span><span style="color: #a61717; background-color: #e3d2d2">.</span><span style="color: #658b00">ProductType</span><span style="color: #a61717; background-color: #e3d2d2">&quot;</span> <span style="color: #658b00">placeholder=</span><span style="color: #CD5555">&quot;Type&quot;</span> <span style="color: #658b00">disabled</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+        <span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-form-field&gt;
+        <span style="color: #8B008B; font-weight: bold">&lt;br&gt;</span>
+        <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-form-field</span> <span style="color: #658b00">color=</span><span style="color: #CD5555">&quot;accent&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+            <span style="color: #8B008B; font-weight: bold">&lt;input</span> <span style="color: #658b00">matInput</span> <span style="color: #a61717; background-color: #e3d2d2">[(</span><span style="color: #658b00">ngModel</span><span style="color: #a61717; background-color: #e3d2d2">)]=&quot;</span><span style="color: #658b00">data</span><span style="color: #a61717; background-color: #e3d2d2">.</span><span style="color: #658b00">Product</span><span style="color: #a61717; background-color: #e3d2d2">.</span><span style="color: #658b00">Segment</span><span style="color: #a61717; background-color: #e3d2d2">&quot;</span> <span style="color: #658b00">placeholder=</span><span style="color: #CD5555">&quot;Segment&quot;</span> <span style="color: #658b00">disabled</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+        <span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-form-field&gt;
+        <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-form-field</span> <span style="color: #658b00">color=</span><span style="color: #CD5555">&quot;accent&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+            <span style="color: #8B008B; font-weight: bold">&lt;input</span> <span style="color: #658b00">matInput</span> <span style="color: #a61717; background-color: #e3d2d2">[(</span><span style="color: #658b00">ngModel</span><span style="color: #a61717; background-color: #e3d2d2">)]=&quot;</span><span style="color: #658b00">data</span><span style="color: #a61717; background-color: #e3d2d2">.</span><span style="color: #658b00">Product</span><span style="color: #a61717; background-color: #e3d2d2">.</span><span style="color: #658b00">CommissionGroup</span><span style="color: #a61717; background-color: #e3d2d2">&quot;</span> <span style="color: #658b00">placeholder=</span><span style="color: #CD5555">&quot;Commission Group&quot;</span> <span style="color: #658b00">disabled</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+        <span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-form-field&gt;
+        <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-form-field</span> <span style="color: #658b00">color=</span><span style="color: #CD5555">&quot;accent&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+            <span style="color: #8B008B; font-weight: bold">&lt;input</span> <span style="color: #658b00">type=</span><span style="color: #CD5555">&quot;number&quot;</span> <span style="color: #658b00">step=</span><span style="color: #CD5555">&quot;0.01&quot;</span> <span style="color: #658b00">matInput</span> <span style="color: #a61717; background-color: #e3d2d2">[(</span><span style="color: #658b00">ngModel</span><span style="color: #a61717; background-color: #e3d2d2">)]=&quot;</span><span style="color: #658b00">data</span><span style="color: #a61717; background-color: #e3d2d2">.</span><span style="color: #658b00">Product</span><span style="color: #a61717; background-color: #e3d2d2">.</span><span style="color: #658b00">Price</span><span style="color: #a61717; background-color: #e3d2d2">&quot;</span> <span style="color: #658b00">placeholder=</span><span style="color: #CD5555">&quot;Price&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+            <span style="color: #8B008B; font-weight: bold">&lt;span</span> <span style="color: #658b00">matPrefix</span><span style="color: #8B008B; font-weight: bold">&gt;</span>$&amp;nbsp;<span style="color: #8B008B; font-weight: bold">&lt;/span&gt;</span>
+        <span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-form-field&gt;
+        <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-form-field</span> <span style="color: #658b00">color=</span><span style="color: #CD5555">&quot;accent&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+            <span style="color: #8B008B; font-weight: bold">&lt;input</span> <span style="color: #658b00">type=</span><span style="color: #CD5555">&quot;number&quot;</span> <span style="color: #658b00">step=</span><span style="color: #CD5555">&quot;0.01&quot;</span> <span style="color: #658b00">matInput</span> <span style="color: #a61717; background-color: #e3d2d2">[(</span><span style="color: #658b00">ngModel</span><span style="color: #a61717; background-color: #e3d2d2">)]=&quot;</span><span style="color: #658b00">data</span><span style="color: #a61717; background-color: #e3d2d2">.</span><span style="color: #658b00">Product</span><span style="color: #a61717; background-color: #e3d2d2">.</span><span style="color: #658b00">CasePrice</span><span style="color: #a61717; background-color: #e3d2d2">&quot;</span> <span style="color: #658b00">placeholder=</span><span style="color: #CD5555">&quot;CasePrice&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+            <span style="color: #8B008B; font-weight: bold">&lt;span</span> <span style="color: #658b00">matPrefix</span><span style="color: #8B008B; font-weight: bold">&gt;</span>$&amp;nbsp;<span style="color: #8B008B; font-weight: bold">&lt;/span&gt;</span>
+        <span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-form-field&gt;
+        <span style="color: #8B008B; font-weight: bold">&lt;br&gt;</span>
+        <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-form-field</span> <span style="color: #658b00">color=</span><span style="color: #CD5555">&quot;accent&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+            <span style="color: #8B008B; font-weight: bold">&lt;input</span> <span style="color: #658b00">matInput</span> <span style="color: #a61717; background-color: #e3d2d2">[(</span><span style="color: #658b00">ngModel</span><span style="color: #a61717; background-color: #e3d2d2">)]=&quot;</span><span style="color: #658b00">data</span><span style="color: #a61717; background-color: #e3d2d2">.</span><span style="color: #658b00">Product</span><span style="color: #a61717; background-color: #e3d2d2">.</span><span style="color: #658b00">CaseUPC</span><span style="color: #a61717; background-color: #e3d2d2">&quot;</span> <span style="color: #658b00">placeholder=</span><span style="color: #CD5555">&quot;Case Barcode&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+        <span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-form-field&gt;
+        <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-form-field</span> <span style="color: #658b00">color=</span><span style="color: #CD5555">&quot;accent&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+            <span style="color: #8B008B; font-weight: bold">&lt;input</span> <span style="color: #658b00">matInput</span> <span style="color: #a61717; background-color: #e3d2d2">[(</span><span style="color: #658b00">ngModel</span><span style="color: #a61717; background-color: #e3d2d2">)]=&quot;</span><span style="color: #658b00">data</span><span style="color: #a61717; background-color: #e3d2d2">.</span><span style="color: #658b00">Product</span><span style="color: #a61717; background-color: #e3d2d2">.</span><span style="color: #658b00">CarrierUPC</span><span style="color: #a61717; background-color: #e3d2d2">&quot;</span> <span style="color: #658b00">placeholder=</span><span style="color: #CD5555">&quot;Carrier Barcode&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+        <span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-form-field&gt;
+        <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-form-field</span> <span style="color: #658b00">color=</span><span style="color: #CD5555">&quot;accent&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+            <span style="color: #8B008B; font-weight: bold">&lt;input</span> <span style="color: #658b00">matInput</span> <span style="color: #a61717; background-color: #e3d2d2">[(</span><span style="color: #658b00">ngModel</span><span style="color: #a61717; background-color: #e3d2d2">)]=&quot;</span><span style="color: #658b00">data</span><span style="color: #a61717; background-color: #e3d2d2">.</span><span style="color: #658b00">Product</span><span style="color: #a61717; background-color: #e3d2d2">.</span><span style="color: #658b00">UnitUPC</span><span style="color: #a61717; background-color: #e3d2d2">&quot;</span> <span style="color: #658b00">placeholder=</span><span style="color: #CD5555">&quot;Unit Barcode&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+        <span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-form-field&gt;
+    <span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-card-content&gt;
+    <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-card-actions</span> <span style="color: #a61717; background-color: #e3d2d2">*</span><span style="color: #658b00">ngIf=</span><span style="color: #CD5555">&quot;data &amp;&amp; data.Product &amp;&amp; !isLoadingResults&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+        <span style="color: #8B008B; font-weight: bold">&lt;button</span> <span style="color: #658b00">mat-raised-button</span> <span style="color: #a61717; background-color: #e3d2d2">(</span><span style="color: #658b00">click</span><span style="color: #a61717; background-color: #e3d2d2">)=&quot;</span><span style="color: #658b00">cancel</span><span style="color: #a61717; background-color: #e3d2d2">()&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>Back<span style="color: #8B008B; font-weight: bold">&lt;/button&gt;</span>
+        <span style="color: #8B008B; font-weight: bold">&lt;button</span> <span style="color: #658b00">mat-raised-button</span> <span style="color: #a61717; background-color: #e3d2d2">(</span><span style="color: #658b00">click</span><span style="color: #a61717; background-color: #e3d2d2">)=&quot;</span><span style="color: #658b00">save</span><span style="color: #a61717; background-color: #e3d2d2">()&quot;</span> <span style="color: #658b00">color=</span><span style="color: #CD5555">&quot;accent&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>Save<span style="color: #8B008B; font-weight: bold">&lt;/button&gt;</span>
+    <span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-card-actions&gt;
+<span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-card&gt;</pre>
+</p>
+<p class="note">
+    Hide empty details with
+    <b>*ngIf</b>. When the app starts, the
+    <b>data</b> is undefined by design.
+    <br>Binding expressions in the template that refer to properties of
+    <b>data</b> — expressions like
+    <b>{{ data.Product.ProductName }}</b> — must fail because there is no data yet.
+</p>
+
+<h2>Set the Specific Product Detail Style</h2>
+<p>
+    Edit the
+    <b>src/app/product-detail/product-detail.component.scss</b> file.
+</p>
+<p>
+    <div class="code-title">
+        src/app/product-detail/product-detail.component.scss
+    </div>
+    <pre class="code"><span style="color: #0000ff">@import</span> <span style="color: #a31515">&quot;../../../node_modules/@angular/material/_theming.scss&quot;</span>;
+
+<span style="color: #0000ff">@include</span> mat-core;
+
+<span style="color: #2b91af">.loading-shade</span> {
+    position: absolute;
+    top: 183<span style="color: #2b91af">px</span>;
+    left: 0;
+    right: 0;
+    background: transparent;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+<span style="color: #2b91af">.product-card</span> {
+    <span style="color: #0000ff">@extend</span> <span style="color: #2b91af">.mat-elevation-z6</span>;
+
+    margin: 20px;
+    min-height: 366px;
+
+    <span style="color: #2b91af">.product-media</span> {
+        margin-left: -24<span style="color: #2b91af">px</span>;
+        margin-right: -24<span style="color: #2b91af">px</span>;
+        margin-top: -24<span style="color: #2b91af">px</span>;
+        padding: 44<span style="color: #2b91af">px</span> 24<span style="color: #2b91af">px</span> 10<span style="color: #2b91af">px</span> 24<span style="color: #2b91af">px</span>;
+        font-size: 12<span style="color: #2b91af">px</span>;
+
+        h1 {
+            font-size: 22<span style="color: #2b91af">px</span>;
+            margin: 0 0 5<span style="color: #2b91af">px</span> 0;
+        }
+    }
+
+    <span style="color: #2b91af">.card-title-bg-0000ff</span> {
+        background: #00f;
+    }
+
+    <span style="color: #2b91af">.card-title-bg-000080</span> {
+        background: #000080;
+    }
+
+    <span style="color: #2b91af">.card-title-bg-483d8b</span> {
+        background: #483d8b;
+    }
+
+    <span style="color: #2b91af">.card-title-bg-4682b4</span> {
+        background: #4682b4;
+    }
+
+    <span style="color: #2b91af">.card-title-bg-00bfff</span> {
+        background: #00bfff;
+    }
+
+    <span style="color: #2b91af">.card-title-bg-228b22</span> {
+        background: #228b22;
+    }
+
+    <span style="color: #2b91af">.card-title-bg-556b2f</span> {
+        background: #556b2f;
+    }
+
+    <span style="color: #2b91af">.card-title-bg-2e8b57</span> {
+        background: #2e8b57;
+    }
+
+    <span style="color: #2b91af">.card-title-bg-32cd32</span> {
+        background: #32cd32;
+    }
+
+    <span style="color: #2b91af">.card-title-bg-9acd32</span> {
+        background: #9acd32;
+    }
+
+    <span style="color: #2b91af">.card-title-bg-ffd700</span> {
+        background: #ffd700;
+    }
+
+    <span style="color: #2b91af">.card-title-bg-daa520</span> {
+        background: #daa520;
+    }
+
+    <span style="color: #2b91af">.card-title-bg-cdcd00</span> {
+        background: #cdcd00;
+    }
+
+    <span style="color: #2b91af">.card-title-bg-8b8b00</span> {
+        background: #8b8b00;
+    }
+
+    <span style="color: #2b91af">.card-title-bg-bdb76b</span> {
+        background: #bdb76b;
+    }
+
+    <span style="color: #2b91af">.card-title-bg-8b4513</span> {
+        background: #8b4513;
+    }
+
+    <span style="color: #2b91af">.card-title-bg-cd853f</span> {
+        background: #cd853f;
+    }
+
+    <span style="color: #2b91af">.card-title-bg-d2691e</span> {
+        background: #d2691e;
+    }
+
+    <span style="color: #2b91af">.card-title-bg-ff8c00</span> {
+        background: #ff8c00;
+    }
+
+    <span style="color: #2b91af">.card-title-bg-cd3700</span> {
+        background: #cd3700;
+    }
+
+    <span style="color: #2b91af">.card-title-bg-ff4500</span> {
+        background: #ff4500;
+    }
+
+    <span style="color: #2b91af">.card-title-bg-ff0000</span> {
+        background: #f00;
+    }
+
+    <span style="color: #2b91af">.card-title-bg-ff6347</span> {
+        background: #ff6347;
+    }
+
+    <span style="color: #2b91af">.card-title-bg-b22222</span> {
+        background: #b22222;
+    }
+
+    <span style="color: #2b91af">.card-title-bg-cd5c5c</span> {
+        background: #cd5c5c;
+    }
+
+    <span style="color: #2b91af">.card-title-bg-ee8262</span> {
+        background: #ee8262;
+    }
+
+    <span style="color: #2b91af">.card-title-bg-ff1493</span> {
+        background: #ff1493;
+    }
+
+    <span style="color: #2b91af">.card-title-bg-8b5f65</span> {
+        background: #8b5f65;
+    }
+
+    <span style="color: #2b91af">.card-title-bg-bc8f8f</span> {
+        background: #bc8f8f;
+    }
+
+    <span style="color: #2b91af">.card-title-bg-b03060</span> {
+        background: #b03060;
+    }
+
+    <span style="color: #2b91af">.card-title-bg-d02090</span> {
+        background: #d02090;
+    }
+
+    <span style="color: #2b91af">.card-title-bg-ff00ff</span> {
+        background: #f0f;
+    }
+
+    <span style="color: #2b91af">.card-title-bg-ee82ee</span> {
+        background: #ee82ee;
+    }
+
+    <span style="color: #2b91af">.card-title-bg-ba55d3</span> {
+        background: #ba55d3;
+    }
+
+    <span style="color: #2b91af">.card-title-bg-a020f0</span> {
+        background: #a020f0;
+    }
+
+    <span style="color: #2b91af">.card-title-bg-9370db</span> {
+        background: #9370db;
+    }
+
+    <span style="color: #2b91af">.card-title-bg-000000</span> {
+        background: #000;
+    }
+
+    <span style="color: #2b91af">.card-title-bg-363636</span> {
+        background: #363636;
+    }
+
+    <span style="color: #2b91af">.card-title-bg-8b8989</span> {
+        background: #8b8989;
+    }
+
+    <span style="color: #2b91af">.card-title-bg-ffffff</span> {
+        background: #fff;
+    }
+
+    <span style="color: #2b91af">.card-title-fg-ffffff</span> {
+        color: #fff;
+    }
+
+    <span style="color: #2b91af">.card-title-fg-000000</span> {
+        color: #000;
+    }
+
+    mat-card-content {
+        padding-top: 20<span style="color: #2b91af">px</span>;
+
+        <span style="color: #2b91af">.full-width</span> {
+            width: 100<span style="color: #2b91af">%</span>;
+        }
+
+        mat-form-field {
+            input {
+                color: rgba(0, 0, 0, 0.87);
+            }
+        }
+    }
+}</pre>
+</p>
+
+<h2>Add a Route</h2>
+<p>
+    You are almost done! Now you need to tell the router about the detail component.
+</p>
+<p>
+    Edit the
+    <b>src/app/app-routing.ts</b> file.
+</p>
+<p>
+    Add the
+    <b>ProductDetailComponent</b> to the router.
+</p>
+<p>
+    <div class="code-title">
+        src/app/app-routing.module.ts
+    </div>
+    <pre class="code"><span style="color: #0000ff">import</span> { NgModule } from <span style="color: #a31515">&#39;@angular/core&#39;</span>;
+<span style="color: #0000ff">import</span> { RouterModule, Routes } from <span style="color: #a31515">&#39;@angular/router&#39;</span>;
+
+<span style="color: #0000ff">import</span> { ProductListComponent } from <span style="color: #a31515">&#39;./product-list/product-list.component&#39;</span>;
+<span style="color: #0000ff">import</span> { ProductDetailComponent } from <span style="color: #a31515">&#39;./product-detail/product-detail.component&#39;</span>;
+
+<span style="color: #0000ff">const</span> routes: <span style="color: #2b91af">Routes</span> = [
+    { path: <span style="color: #a31515">&#39;products&#39;</span>, redirectTo: <span style="color: #a31515">&#39;products/0&#39;</span>, pathMatch: <span style="color: #a31515">&#39;full&#39;</span> },
+    { path: <span style="color: #a31515">&#39;products/:page&#39;</span>, component: ProductListComponent },
+    { path: <span style="color: #a31515">&#39;products/:page/:id&#39;</span>, component: ProductDetailComponent }
+];
+
+<span style="color: #a31515">@NgModule</span>({
+    imports: [ RouterModule.forRoot(routes) ],
+    exports: [ RouterModule ]
+})
+
+<span style="color: #0000ff">export</span> <span style="color: #0000ff">class</span> AppRoutingModule { }</pre>
+</p>
+<p>
+    Notice that you simply extended the
+    <b>products</b> route. This is done so you can keep track of where you are in teh product list.
+</p>
+
+<h2>Try it Out</h2>
+<p>
+    You have successfully created the product detail component. You should be able to edit products now.
+</p>
+<p>
+    In your browser go to
+    <b>http://localhost:4200/products</b>.
+</p>
+
+<p class="note">
+    <span class="next-step">Next Step</span>
+    <br>
+    <br>Now let's make the
+    <a href="/docs/product-editor/dashboard">Dashboard</a> component.
+</p>

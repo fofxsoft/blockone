@@ -1,0 +1,114 @@
+<h1>Get Product Command</h1>
+<div class="rule"></div>
+<p>
+    Why do we need a GetProducts and a GetProduct command? Well we are doing this to seperate our needs. GetProducts fetches
+    multiple product records, and only the fields we want to display. This makes the call smaller. The GetProduct is used
+    to fetch more information about a single product. This is only called when the user needs it, which gretly reduces the
+    amount of traffic.
+</p>
+
+<h2>Create the Single Product View</h2>
+<p>
+    Navigate to the
+    <b>Products</b> table.
+</p>
+<p>
+    Click on the
+    <b>View</b> icon (Arrow) on any record. It doesn't matter which product it is because your app will handle this for you.
+</p>
+<p>
+    <div class="screen-title">
+        TableView.aspx?TableName=Products
+    </div>
+    <div class="screen" style="background: #ededed;">
+        <img src="/assets/docs/encompass-api/single-product.png">
+    </div>
+</p>
+
+<h2>Create the GetProduct Command</h2>
+<p>
+    Once you have your view on the screen, copy the relitive URL. You don't need the https://test.encompass/aspx1/. You will
+    also need to change the
+    <b>Search</b> to
+    <b>Parameters</b>. The URL will look like this;
+    <br>
+    <b>TableView.aspx?TableName=Products&Parameters=F:ProductID~V:1~O:E</b>
+</p>
+<p class="note">
+    Why do we need to change Search to Parameters? This is because the API logic can allow Parameters and not Search. Parameters
+    are a bit different than the Search. Parameters use field identifiers.
+    <b>F</b>:[Field]~
+    <b>V</b>:[Filter Value]~
+    <b>O</b>:[Filter Operator (E,NE,G,GE,L,LE)]. There are others, but for the sake of this tutorial we will only use F, V and
+    O.
+</p>
+<p class="note">
+    We will be creating these commands manually. This will help to understand API Commands better.
+</p>
+<p>
+    Navigate to the API Commands table.
+</p>
+<p>
+    Click
+    <b>Add API Command</b>.
+</p>
+<p>
+    <ul>
+        <li>
+            Set your
+            <b>Publisher ID</b>.
+            <br>
+            <br>
+        </li>
+        <li>
+            Set the
+            <b>Command Name</b> to
+            <b>GetProduct</b>
+            <br>
+            <br>
+        </li>
+        <li>
+            Paste the TableView URL into the
+            <b>URL</b> field.
+            <br>You will need to add
+            <b>&Format=JSON</b> to the end of the URL.
+            <br>The URL should look like this;
+        </li>
+    </ul>
+</p>
+<p class="terminal" style="word-break: break-all;">
+    <b>TableView.aspx?TableName=Products&Parameters=F:ProductID~V:1~O:E
+        <span style="color: #10b0c9;">&Format=JSON</span>
+    </b>
+</p>
+<p>
+    <ul>
+        <li>
+            We will need to add some white-listed parameters, so your app can change which product it needs.
+            <br>Notice that there is a
+            <b>ProductID</b> field in the Parameters. You will need to allow the app to change this value.
+            <br>Enter
+            <b>ProductID</b> in the
+            <b>Allowed Parameter Array</b> field.
+            <br>
+        </li>
+    </ul>
+</p>
+<p class="note">
+    You can add any field from the table to the Parameters. This can be handy when fetching specific data from Encompass.
+</p>
+<p>
+    Click
+    <b>Add Record</b>.
+</p>
+
+<h2>What's Next?</h2>
+<p>
+    Two commands done! But we are not done yet.
+</p>
+<p class="note">
+    <span class="next-step">Next Step</span>
+    <br>
+    <br>Let's continue with the
+    <a href="/docs/encompass-api/get-brand">GetBrand Command</a>.
+</p>

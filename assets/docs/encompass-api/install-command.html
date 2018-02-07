@@ -1,0 +1,102 @@
+<h1>Installing API Commands</h1>
+<div class="rule"></div>
+<p>
+    Before any API Command can be used it must be installed to the Distributor's site. This is done for security, a Distributor
+    must grant access to you to access their data.
+</p>
+<p class="note">
+    Since your publisher test site is yours, we will be granting access to the commands you just created. In production the Distributor
+    will do this.
+</p>
+
+<h2>Accessing the Install API Interface</h2>
+<p>
+    In your Encompass test site, mavigate to
+    <b>Install APIs</b>. You can enter
+    <b>Install APIs</b> in the search field.
+</p>
+<p>
+    <div class="screen-title">
+        APIInterface.aspx
+    </div>
+    <div class="screen" style="background: #ededed;">
+        <img src="/assets/docs/encompass-api/available-commands.png">
+    </div>
+</p>
+<p class="note">
+    If you have many publisher records, you can filter the command list to your publisher name.
+</p>
+<p>
+    Click
+    <b>Install</b> for these commands;
+</p>
+<p>
+    <ul>
+        <li>GetProducts</li>
+        <li>GetProduct</li>
+        <li>GetBrand</li>
+        <li>UpdateProduct</li>
+        <li>ProductInfo</li>
+    </ul>
+</p>
+<p>
+    When the command installs, you will see a
+    <b>Get Sample Link</b> button.
+</p>
+
+<h2>A Simple Test</h2>
+<p>
+    It is noce to know what the data looks like. So we are going to review the
+    <b>GetProducts</b> command.
+</p>
+<p>
+    Find the
+    <b>GetProducts</b> command and click
+    <b>Get Sample Link</b>.
+</p>
+<p>
+    The URL will look like this;
+</p>
+<p class="terminal">
+    <b>https://api.encompass8.com/aspx1/API.aspx?Token=</b><span style="color: #10b0c9;"><b>[SUPER_SECRET_TOKEN]</b></span>&EncompassID=</b><span style="color: #10b0c9;"><b>[TEST_SITE_ID]</b></span><b>&Command=GetProducts</b>
+</p>
+<p>
+    <div class="code-title">
+        GetProducts JSON
+    </div>
+    <pre class="code">{
+    &quot;Export&quot;: {
+        &quot;Table&quot;: {
+            &quot;RecordCount&quot;: <span style="color: #a31515">&quot;1234&quot;</span>,
+            &quot;Name&quot;: <span style="color: #a31515">&quot;Products&quot;</span>,
+            &quot;Field&quot;: [{
+                &quot;Name&quot;: <span style="color: #a31515">&quot;ProductID&quot;</span>,
+                &quot;DataType&quot;: <span style="color: #a31515">&quot;Integer&quot;</span>
+            },{
+            ...
+            }],
+            &quot;Row&quot;: [{
+                &quot;ProductID&quot;: <span style="color: #a31515">&quot;1&quot;</span>,
+                &quot;ProductName&quot;: <span style="color: #a31515">&quot;Test Product&quot;</span>,
+                &quot;Supplier&quot;: <span style="color: #a31515">&quot;Test Supplier&quot;</span>,
+                &quot;Active&quot;: <span style="color: #a31515">&quot;Active&quot;</span>,
+                &quot;Brand&quot;: <span style="color: #a31515">&quot;Test Brand&quot;</span>,
+                &quot;ProductType&quot;: <span style="color: #a31515">&quot;Test Product Type&quot;</span>,
+                &quot;Package&quot;: <span style="color: #a31515">&quot;Test Package&quot;</span>,
+                &quot;SupplierProductNum&quot;: <span style="color: #0000ff">null</span>,
+                &quot;CarrierUPC&quot;: <span style="color: #0000ff">null</span>
+            },{
+            ...</pre>
+</p>
+
+<h2>What's Next?</h2>
+<p>
+    You are done! You have created a set of API Commands and installed those to the your test site. You are ready to do something
+    with the data.
+</p>
+<p class="note">
+    <span class="next-step">Next Step</span>
+    <br>
+    <br>You are now familiar with Angular and the Encompass API. Now you are ready for the
+    <a href="/docs/product-editor">Product Editor Tutorial</a>.
+</p>

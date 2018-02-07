@@ -1,0 +1,179 @@
+<h1>Routing</h1>
+<div class="rule"></div>
+<p>
+    Routing is how Angular seperates components with the URL. It handles the browsers location and history.
+</p>
+
+<h2>Add the AppRoutingModule</h2>
+<p>
+    An Angular best practice is to load and configure the router in a separate, top-level module that is dedicated to routing
+    and imported by the root
+    <b>AppModule</b>.
+</p>
+<p>
+    By convention, the module class name is
+    <b>AppRoutingModule</b> and it belongs in the app-routing.module.ts in the
+    <b>src/app</b> folder.
+</p>
+<p>
+    Use the CLI to generate it.
+</p>
+<p class="terminal">
+    ng generate module app-routing --flat --module=app
+</p>
+<p class="note">
+    <b>--flat</b> puts the file in src/app instead of its own folder.
+    <br>
+    <b>--module=app</b> tells the CLI to register it in the imports array of the AppModule.
+</p>
+<p>
+    The generated file looks like this:
+</p>
+<p>
+    <div class="code-title">
+        src/app/app-routing.module.ts (generated)
+    </div>
+    <pre class="code"><span style="color: #0000ff">import</span> { NgModule } from <span style="color: #a31515">&#39;@angular/core&#39;</span>;
+<span style="color: #0000ff">import</span> { CommonModule } from <span style="color: #a31515">&#39;@angular/common&#39;</span>;
+
+<span style="color: #a31515">@NgModule</span>({
+  imports: [
+    CommonModule
+  ],
+  declarations: []
+})
+<span style="color: #0000ff">export</span> <span style="color: #0000ff">class</span> AppRoutingModule { }</pre>
+</p>
+<p>
+    You generally don't declare components in a routing module so you can delete the
+    <b>@NgModule.declarations</b> array and delete
+    <b>CommonModule</b> references too.
+</p>
+<p>
+    You'll configure the router with
+    <b>Routes</b> in the
+    <b>RouterModule</b> so import those two symbols from the
+    <b>@angular/router</b> library.
+</p>
+<p>
+    Add an
+    <b>@NgModule.exports</b> array with
+    <b>RouterModule</b> in it. Exporting
+    <b>RouterModule</b> makes router directives available for use in the
+    <b>AppModule</b> components that will need them.
+</p>
+<p>
+    <b>AppRoutingModule</b> looks like this now:
+</p>
+<p>
+    <div class="code-title">
+        src/app/app-routing.module.ts
+    </div>
+    <pre class="code"><span style="color: #0000ff">import</span> { NgModule } from <span style="color: #a31515">&#39;@angular/core&#39;</span>;
+<span style="color: #0000ff">import</span> { RouterModule, Routes } from <span style="color: #a31515">&#39;@angular/route&#39;</span>;
+
+<span style="color: #a31515">@NgModule</span>({
+  exports: [ RouterModule ]
+})
+<span style="color: #0000ff">export</span> <span style="color: #0000ff">class</span> AppRoutingModule { }</pre>
+</p>
+<h2>Add Routes</h2>
+<p>
+    Routes tell the router which view to display when a user clicks a link or pastes a URL into the browser address bar.
+</p>
+<p>
+    You will add routes later when you create the product list and detail components. So for now all you need is the empty
+    <b>routes</b> constant.
+</p>
+<p>
+    <div class="code-title">
+        src/app/app-routing.module.ts (snippet)
+    </div>
+    <pre class="code"><span style="color: #0000ff">const</span> routes: <span style="color: #2b91af">Routes</span> = [];</pre>
+</p>
+
+<h2>RouterModule.forRoot()</h2>
+<p>
+    You first must initialize the router and start it listening for browser location changes.
+</p>
+<p>
+    Add
+    <b>RouterModule</b> to the
+    <b>@NgModule.imports</b> array and configure it with the
+    <b>routes</b> in one step by calling
+    <b>RouterModule.forRoot()</b>
+    within the
+    <b>imports</b> array, like this:
+</p>
+<p>
+    <div class="code-title">
+        src/app/app-routing.module.ts (snippet)
+    </div>
+    <pre class="code">imports: [ RouterModule.forRoot(routes) ],</pre>
+</p>
+<p class="note">
+    The method is called
+    <b>forRoot()</b> because you configure the router at the application's root level. The
+    <b>forRoot()</b> method supplies the service providers and directives needed for routing, and performs the initial navigation
+    based on the current browser URL.
+</p>
+
+<h2>Review</h2>
+<p>
+    Your <b>src/app/app-routing.module.ts</b> file should look like this;
+</p>
+<p>
+    <div class="code-title">
+        src/app/app-routing.module.ts
+    </div>
+    <pre class="code"><span style="color: #0000ff">import</span> { NgModule } from <span style="color: #a31515">&#39;@angular/core&#39;</span>;
+<span style="color: #0000ff">import</span> { RouterModule, Routes } from <span style="color: #a31515">&#39;@angular/router&#39;</span>;
+
+<span style="color: #0000ff">const</span> routes: <span style="color: #2b91af">Routes</span> = [];
+
+<span style="color: #a31515">@NgModule</span>({
+    imports: [ RouterModule.forRoot(routes) ],
+    exports: [ RouterModule ]
+})
+
+<span style="color: #0000ff">export</span> <span style="color: #0000ff">class</span> AppRoutingModule { }</pre>
+</p>
+
+<h2>Add RouterOutlet</h2>
+<p>
+    Edit the <b>src/app/app.component.html</b> file.
+</p>
+<p>
+    <div class="code-title">
+        src/app/app.component.html
+    </div>
+    <pre class="code"><span style="color: #8B008B; font-weight: bold">&lt;mat-toolbar</span> <span style="color: #658b00">color=</span><span style="color: #CD5555">&quot;primary&quot;</span> <span style="color: #658b00">class=</span><span style="color: #CD5555">&quot;nav&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+    <span style="color: #8B008B; font-weight: bold">&lt;mat-toolbar-row&gt;</span>
+        <span style="color: #8B008B; font-weight: bold">&lt;button</span> <span style="color: #a61717; background-color: #e3d2d2">mat-icon-button</span> <span style="color: #a61717; background-color: #e3d2d2">(click)=&quot;drawer.toggle()&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+            <span style="color: #8B008B; font-weight: bold">&lt;mat-icon&gt;</span>menu<span style="color: #8B008B; font-weight: bold">&lt;/mat-icon&gt;</span>
+        <span style="color: #8B008B; font-weight: bold">&lt;/button&gt;</span>
+        <span style="color: #8B008B; font-weight: bold">&lt;span</span> <span style="color: #658b00">class=</span><span style="color: #CD5555">&quot;mat-button&quot;</span> <span style="color: #a61717; background-color: #e3d2d2">(click)=&quot;drawer.toggle()&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+            <span style="color: #8B008B; font-weight: bold">&lt;span</span> <span style="color: #658b00">class=</span><span style="color: #CD5555">&quot;mat-button-wrapper&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+                <span style="color: #8B008B; font-weight: bold">&lt;img</span> <span style="color: #658b00">class=</span><span style="color: #CD5555">&quot;logo&quot;</span> <span style="color: #658b00">src=</span><span style="color: #CD5555">&quot;/assets/logo.svg&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+            <span style="color: #8B008B; font-weight: bold">&lt;/span&gt;</span>
+        <span style="color: #8B008B; font-weight: bold">&lt;/span&gt;</span>
+    <span style="color: #8B008B; font-weight: bold">&lt;/mat-toolbar-row&gt;</span>
+<span style="color: #8B008B; font-weight: bold">&lt;/mat-toolbar&gt;</span>
+<span style="color: #8B008B; font-weight: bold">&lt;mat-drawer-container</span> <span style="color: #658b00">class=</span><span style="color: #CD5555">&quot;layout&quot;</span> <span style="color: #a61717; background-color: #e3d2d2">autosize</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+    <span style="color: #8B008B; font-weight: bold">&lt;mat-drawer</span> <span style="color: #a61717; background-color: #e3d2d2">#drawer</span> <span style="color: #658b00">class=</span><span style="color: #CD5555">&quot;menu&quot;</span> <span style="color: #658b00">mode=</span><span style="color: #CD5555">&quot;side&quot;</span> <span style="color: #658b00">opened=</span><span style="color: #CD5555">&quot;true&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+        <span style="color: #8B008B; font-weight: bold">&lt;app-nav&gt;&lt;/app-nav&gt;</span>
+    <span style="color: #8B008B; font-weight: bold">&lt;/mat-drawer&gt;</span>
+    <span style="color: #8B008B; font-weight: bold">&lt;mat-drawer-content&gt;</span>
+        <span style="color: #8B008B; font-weight: bold">&lt;main&gt;</span>
+            <span style="color: #8B008B; font-weight: bold">&lt;router-outlet&gt;&lt;/router-outlet&gt;</span>
+        <span style="color: #8B008B; font-weight: bold">&lt;/main&gt;</span>
+    <span style="color: #8B008B; font-weight: bold">&lt;/mat-drawer-content&gt;</span>
+<span style="color: #8B008B; font-weight: bold">&lt;/mat-drawer-container&gt;</span></pre>
+</p>
+
+<p class="note">
+    <span class="next-step">Next Step</span>
+    <br>
+    <br>Now there is a place to define the app's routes. You can move on and create the
+    <a href="/docs/product-editor/product-list">Product List</a> component.
+</p>

@@ -1,0 +1,185 @@
+<h1>Logging</h1>
+<div class="rule"></div>
+<p>
+    All through this project, you have been writing messages to the
+    <b>LogService</b>. You can display that log on the bottom of the screen when the
+    <b>debugging</b> environment variable is
+    <b>true</b>.
+</p>
+
+<h2>Create the Log Component</h2>
+<p>
+    Using the Angular CLI, generate a new component named
+    <b>log</b>
+</p>
+<p class="terminal">
+    ng generate component log
+</p>
+<p>
+    The CLI creates a new folder,
+    <b>src/app/log/</b> and generates the three files of the
+    <bLogComponent</b>.
+</p>
+<p>
+    The
+    <b>LogComponent</b> class file is as follows:
+</p>
+<p>
+    <div class="code-title">
+        src/app/log/log.component.ts
+    </div>
+    <pre class="code"><span style="color: #0000ff">import</span> { Component, OnInit } from <span style="color: #a31515">&#39;@angular/core&#39;</span>;
+
+<span style="color: #a31515">@Component</span>({
+    selector: <span style="color: #a31515">&#39;app-log&#39;</span>,
+    templateUrl: <span style="color: #a31515">&#39;./log.component.html&#39;</span>,
+    styleUrls: [<span style="color: #a31515">&#39;./log.component.scss&#39;</span>]
+})
+
+<span style="color: #0000ff">export</span> <span style="color: #0000ff">class</span> LogComponent <span style="color: #0000ff">implements</span> OnInit {
+    <span style="color: #0000ff">constructor</span>() { }
+
+    ngOnInit() { }
+}</pre>
+</p>
+
+<h2>Import the LogService</h2>
+<p>
+    Edit the
+    <b>src/app/log/log.component.ts</b> file.
+</p>
+<p>
+    <div class="code-title">
+        src/app/log/log.component.ts
+    </div>
+    <pre class="code"><span style="color: #0000ff">import</span> { Component, OnInit } from <span style="color: #a31515">&#39;@angular/core&#39;</span>;
+
+<span style="color: #0000ff">import</span> { LogService } from <span style="color: #a31515">&#39;../log.service&#39;</span>;
+
+<span style="color: #a31515">@Component</span>({
+    selector: <span style="color: #a31515">&#39;app-log&#39;</span>,
+    templateUrl: <span style="color: #a31515">&#39;./log.component.html&#39;</span>,
+    styleUrls: [<span style="color: #a31515">&#39;./log.component.scss&#39;</span>]
+})
+
+<span style="color: #0000ff">export</span> <span style="color: #0000ff">class</span> LogComponent <span style="color: #0000ff">implements</span> OnInit {
+    <span style="color: #0000ff">constructor</span>(<span style="color: #0000ff">public</span> log: <span style="color: #2b91af">LogService</span>) { }
+
+    ngOnInit() { }
+}</pre>
+</p>
+
+<h2>Define the View</h2>
+<p>
+    Edit the
+    <b>src/app/log/log.component.html</b> file.
+</p>
+<p>
+    <div class="code-title">
+        src/app/log/log.component.html
+    </div>
+    <pre class="code"><span style="color: #8B008B; font-weight: bold">&lt;div</span> <span style="color: #658b00">class=</span><span style="color: #CD5555">&quot;log-container&quot;</span> <span style="color: #a61717; background-color: #e3d2d2">*</span><span style="color: #658b00">ngIf=</span><span style="color: #CD5555">&quot;log.messages.length &amp;&amp; log.display&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+    <span style="color: #8B008B; font-weight: bold">&lt;h1&gt;</span>Debug Log<span style="color: #8B008B; font-weight: bold">&lt;/h1&gt;</span>
+    <span style="color: #8B008B; font-weight: bold">&lt;div</span> <span style="color: #658b00">class=</span><span style="color: #CD5555">&quot;log-messages&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+        <span style="color: #8B008B; font-weight: bold">&lt;div</span> <span style="color: #a61717; background-color: #e3d2d2">*</span><span style="color: #658b00">ngFor=</span><span style="color: #CD5555">&#39;let message of log.messages&#39;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+            <span style="color: #8B008B; font-weight: bold">&lt;pre&gt;</span>{{message}}<span style="color: #8B008B; font-weight: bold">&lt;/pre&gt;</span>
+        <span style="color: #8B008B; font-weight: bold">&lt;/div&gt;</span>
+    <span style="color: #8B008B; font-weight: bold">&lt;/div&gt;</span>
+<span style="color: #8B008B; font-weight: bold">&lt;/div&gt;</span></pre>
+</p>
+
+<h2>Define the Log Style</h2>
+<p>
+    Edit the
+    <b>src/app/log/log.component.scss</b> file.
+</p>
+<p>
+    <div class="code-title">
+        src/app/log/log.component.scss
+    </div>
+    <pre class="code"><span style="color: #2b91af">.log-container</span> {
+    padding: 0 20<span style="color: #2b91af">px</span> 20<span style="color: #2b91af">px</span> 20<span style="color: #2b91af">px</span>;
+
+    h1 {
+        font-size: 14<span style="color: #2b91af">px</span>;
+        font-weight: normal;
+        color: rgb(155, 155, 155);
+        margin-bottom: 4<span style="color: #2b91af">px</span>;
+    }
+
+    <span style="color: #2b91af">.log-messages</span> {
+        padding: 10<span style="color: #2b91af">px</span> 25<span style="color: #2b91af">px</span> 10<span style="color: #2b91af">px</span> 25<span style="color: #2b91af">px</span>;
+        background: rgb(235, 235, 235);
+
+        pre {
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+    }
+}</pre>
+</p>
+
+<h2>Bind the LogComponent to the AppComponent</h2>
+<p>
+    The
+    <b>LogComponent</b> is not part of the router. instead it is going to be on every page. To do this you will need to add
+    the
+    <b>app-log</b> tag to the
+    <b>AppComponent</b> view.
+</p>
+<p>
+    Edit the
+    <b>src/app/app.component.html</b> file.
+</p>
+<p>
+    <div class="code-title">
+        src/app/app.component.html
+    </div>
+    <pre class="code"><span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-toolbar</span> <span style="color: #658b00">color=</span><span style="color: #CD5555">&quot;primary&quot;</span> <span style="color: #658b00">class=</span><span style="color: #CD5555">&quot;nav&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+    <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-toolbar-row</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+        <span style="color: #8B008B; font-weight: bold">&lt;button</span> <span style="color: #658b00">mat-icon-button</span> <span style="color: #a61717; background-color: #e3d2d2">(</span><span style="color: #658b00">click</span><span style="color: #a61717; background-color: #e3d2d2">)=&quot;</span><span style="color: #658b00">drawer</span><span style="color: #a61717; background-color: #e3d2d2">.</span><span style="color: #658b00">toggle</span><span style="color: #a61717; background-color: #e3d2d2">()&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+            <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-icon</span><span style="color: #8B008B; font-weight: bold">&gt;</span>menu<span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-icon&gt;
+        <span style="color: #8B008B; font-weight: bold">&lt;/button&gt;</span>
+        <span style="color: #8B008B; font-weight: bold">&lt;span</span> <span style="color: #658b00">class=</span><span style="color: #CD5555">&quot;mat-button&quot;</span> <span style="color: #a61717; background-color: #e3d2d2">(</span><span style="color: #658b00">click</span><span style="color: #a61717; background-color: #e3d2d2">)=&quot;</span><span style="color: #658b00">drawer</span><span style="color: #a61717; background-color: #e3d2d2">.</span><span style="color: #658b00">toggle</span><span style="color: #a61717; background-color: #e3d2d2">()&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+            <span style="color: #8B008B; font-weight: bold">&lt;span</span> <span style="color: #658b00">class=</span><span style="color: #CD5555">&quot;mat-button-wrapper&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+                <span style="color: #8B008B; font-weight: bold">&lt;img</span> <span style="color: #658b00">class=</span><span style="color: #CD5555">&quot;logo&quot;</span> <span style="color: #658b00">src=</span><span style="color: #CD5555">&quot;/assets/logo.svg&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+            <span style="color: #8B008B; font-weight: bold">&lt;/span&gt;</span>
+        <span style="color: #8B008B; font-weight: bold">&lt;/span&gt;</span>
+    <span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-toolbar-row&gt;
+<span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-toolbar&gt;
+<span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-drawer-container</span> <span style="color: #658b00">class=</span><span style="color: #CD5555">&quot;layout&quot;</span> <span style="color: #658b00">autosize</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+    <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-drawer</span> <span style="color: #a61717; background-color: #e3d2d2">#</span><span style="color: #658b00">drawer</span> <span style="color: #658b00">class=</span><span style="color: #CD5555">&quot;menu&quot;</span> <span style="color: #658b00">mode=</span><span style="color: #CD5555">&quot;side&quot;</span> <span style="color: #658b00">opened=</span><span style="color: #CD5555">&quot;true&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+        <span style="color: #8B008B; font-weight: bold">&lt;app</span><span style="color: #658b00">-nav</span><span style="color: #8B008B; font-weight: bold">&gt;</span><span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/app-nav&gt;
+    <span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-drawer&gt;
+    <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-drawer-content</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+        <span style="color: #8B008B; font-weight: bold">&lt;main&gt;</span>
+            <span style="color: #8B008B; font-weight: bold">&lt;router</span><span style="color: #658b00">-outlet</span><span style="color: #8B008B; font-weight: bold">&gt;</span><span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/router-outlet&gt;
+            <span style="color: #8B008B; font-weight: bold">&lt;app</span><span style="color: #658b00">-log</span><span style="color: #8B008B; font-weight: bold">&gt;</span><span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/app-log&gt;
+        <span style="color: #8B008B; font-weight: bold">&lt;/main&gt;</span>
+    <span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-drawer-content&gt;
+<span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-drawer-container&gt;</pre>
+</p>
+<p class="note">
+    You can disable the log by editing the
+    <b>src/environments/environment.ts</b> file and set the
+    <b>debug</b> directive to
+    <b>false</b>.
+</p>
+
+<h2>Congratulations</h2>
+<p>
+    You have completed the Product Editor tutorial. You should now have a basic understanding of Angular, Material and the Encompass
+    API.
+</p>
+
+<p class="note">
+    <span class="next-step">Further Reading</span>
+    <br>
+    <br>Head over to the
+    <a href="https://angular.io/">Angular</a> site. There is ton of information on the various features of the Angular Framework. Take note of the unit
+    testing and the end to end testing, that is built right into the framework.
+    <br>
+    <br>Also, check out the
+    <a href="https://material.io/">Material</a> site, and the
+    <a href="https://material.angular.io/">Angular Material</a> site. There is great information here about the MAterial Design Concepts, and how to implement them.
+</p>

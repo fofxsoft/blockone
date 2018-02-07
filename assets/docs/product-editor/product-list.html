@@ -1,0 +1,463 @@
+<h1>Product List</h1>
+<div class="rule"></div>
+<p>
+    The product list will display a table of the products. You will use the GetProducts command you created in the Encompass
+    API tutorial.
+</p>
+<p class="note">
+    If you haven't done this. Complete the
+    <a href="/docs/encompass-api">Encompass API</a> tutorial before continuing.
+</p>
+
+<h2>Create the Product List Component</h2>
+<p>
+    Using the Angular CLI, generate a new component named
+    <b>product-list</b>
+</p>
+<p class="terminal">
+    ng generate component product-list
+</p>
+<p>
+    The CLI creates a new folder,
+    <b>src/app/product-list/</b> and generates the three files of the
+    <b>ProductListComponent</b>.
+</p>
+<p>
+    The
+    <b>ProductListComponent</b> class file is as follows:
+</p>
+<p>
+    <div class="code-title">
+        src/app/product-list/product-list.component.ts
+    </div>
+    <pre class="code"><span style="color: #0000ff">import</span> { Component, OnInit } from <span style="color: #a31515">&#39;@angular/core&#39;</span>;
+
+<span style="color: #a31515">@Component</span>({
+  selector: <span style="color: #a31515">&#39;app-product-list&#39;</span>,
+  templateUrl: <span style="color: #a31515">&#39;./product-list.component.html&#39;</span>,
+  styleUrls: [<span style="color: #a31515">&#39;./product-list.component.scss&#39;</span>]
+})
+
+<span style="color: #0000ff">export</span> <span style="color: #0000ff">class</span> ProductListComponent <span style="color: #0000ff">implements</span> OnInit {
+  <span style="color: #0000ff">constructor</span>() { }
+
+  ngOnInit() { }
+}</pre>
+</p>
+<p>
+    You always import the
+    <b>Component</b> symbol from the Angular core library and annotate the component class with
+    <b>@Component</b>.
+</p>
+<p>
+    <b>@Component</b> is a decorator function that specifies the Angular metadata for the component.
+</p>
+<p>
+    The CLI generated three metadata properties:
+</p>
+<p>
+    <ul>
+        <li>
+            <b>selector</b> the components CSS element selector</li>
+        <li>
+            <b>templateUrl</b> the location of the component's template file.</li>
+        <li>
+            <b>styleUrls</b> the location of the component's private CSS styles.</li>
+    </ul>
+</p>
+<p>
+    The CSS element selector,
+    <b>'app-product-list'</b>, matches the name of the HTML element that identifies this component within a parent component's
+    template.
+    <br>The
+    <b>ngOnInit</b> is a lifecycle hook Angular calls
+    <b>ngOnInit</b> shortly after creating a component. It's a good place to put initialization logic.
+    <br>Always
+    <b>export</b> the component class so you can
+    <b>import</b> it elsewhere ... like in the
+    <b>AppModule</b>.
+</p>
+
+<h2>Define a Route</h2>
+<p>
+    Edit the
+    <b>src/app/app-routing.ts</b> file.
+</p>
+<p>
+    Add the <b>ProductListComponent</b> to the router.
+</p>
+<p>
+    <div class="code-title">
+        src/app/app-routing.module.ts
+    </div>
+    <pre class="code"><span style="color: #0000ff">import</span> { NgModule } from <span style="color: #a31515">&#39;@angular/core&#39;</span>;
+<span style="color: #0000ff">import</span> { RouterModule, Routes } from <span style="color: #a31515">&#39;@angular/router&#39;</span>;
+
+<span style="color: #0000ff">import</span> { ProductListComponent } from <span style="color: #a31515">&#39;./product-list/product-list.component&#39;</span>;
+
+<span style="color: #0000ff">const</span> routes: <span style="color: #2b91af">Routes</span> = [
+    { path: <span style="color: #a31515">&#39;products&#39;</span>, redirectTo: <span style="color: #a31515">&#39;products/0&#39;</span>, pathMatch: <span style="color: #a31515">&#39;full&#39;</span> },
+    { path: <span style="color: #a31515">&#39;products/:page&#39;</span>, component: ProductListComponent }
+];
+
+<span style="color: #a31515">@NgModule</span>({
+    imports: [ RouterModule.forRoot(routes) ],
+    exports: [ RouterModule ]
+})
+
+<span style="color: #0000ff">export</span> <span style="color: #0000ff">class</span> AppRoutingModule { }</pre>
+</p>
+<p>
+    You added two routes. One that redirects to page 0 and the other that adds a page variable. This is used to control the pagination
+    on the product list.
+</p>
+
+<h2>Try it Out</h2>
+<p>
+    In your browser navagate to
+    <b>http://localhost:4200/products</b>.
+</p>
+<p>
+    Your browser should redirect to
+    <b>http://localhost:4200/products/0</b>. The screen should show
+    <b>product-list works!</b>
+</p>
+
+<h2>Update the NavComponent</h2>
+<p>
+    Now that we have a route, you can now add
+    <b>routerLink</b> directives to the buttons in the
+    <b>NavComponent</b>.
+</p>
+<p>
+    Edit the
+    <b>src/app/nav.nav.component.html</b> file.
+</p>
+<p>
+    Add the
+    <b>routerLink</b> directive to the menu buttons.
+</p>
+<p>
+    <div class="code-title">
+        src/app/nav/nav.component.html
+    </div>
+    <pre class="code"><span style="color: #8B008B; font-weight: bold">&lt;ul&gt;</span>
+    <span style="color: #8B008B; font-weight: bold">&lt;li</span> <span style="color: #a61717; background-color: #e3d2d2">[class.active]=</span><span style="color: #CD5555">&quot;isActive('/dashboard')&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+        <span style="color: #8B008B; font-weight: bold">&lt;a</span> <span style="color: #a61717; background-color: #e3d2d2">mat-button</span> <span style="color: #658b00">routerLink=</span><span style="color: #CD5555">&quot;/&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+            Dashboard
+        <span style="color: #8B008B; font-weight: bold">&lt;/a&gt;</span>
+    <span style="color: #8B008B; font-weight: bold">&lt;/li&gt;</span>
+    <span style="color: #8B008B; font-weight: bold">&lt;li</span> <span style="color: #a61717; background-color: #e3d2d2">[class.active]=</span><span style="color: #CD5555">&quot;isActive('/products')&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+        <span style="color: #8B008B; font-weight: bold">&lt;a</span> <span style="color: #a61717; background-color: #e3d2d2">mat-button</span> <span style="color: #658b00">routerLink=</span><span style="color: #CD5555">&quot;/products&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+            Products
+        <span style="color: #8B008B; font-weight: bold">&lt;/a&gt;</span>
+    <span style="color: #8B008B; font-weight: bold">&lt;/li&gt;</span>
+<span style="color: #8B008B; font-weight: bold">&lt;/ul&gt;</span></pre>
+</p>
+<p>
+    Notice that there now is
+    <b>[class.active]="isActive('/products')"</b> on the
+    <b>li</b> tag. This is there to add the
+    <b>.active</b> class to the
+    <b>li</b> tag. The
+    <b>.active</b> class will change the style, letting the user know where they are.
+</p>
+<p>
+    To do this you will need to create the
+    <b>isActive()</b> function in the
+    <b>src/app/nav/nav.component.ts</b> file.
+</p>
+<p>
+    You will also need to import
+    <b>Location</b> from
+    <b>@angular/common</b>.
+</p>
+<p>
+    <div class="code-title">
+        src/app/nav/nav.component.ts
+    </div>
+    <pre class="code"><span style="color: #0000ff">import</span> { Component, OnInit } from <span style="color: #a31515">&#39;@angular/core&#39;</span>;
+<span style="color: #0000ff">import</span> { Location } from <span style="color: #a31515">&#39;@angular/common&#39;</span>;
+
+<span style="color: #a31515">@Component</span>({
+    selector: <span style="color: #a31515">&#39;app-nav&#39;</span>,
+    templateUrl: <span style="color: #a31515">&#39;./nav.component.html&#39;</span>,
+    styleUrls: [<span style="color: #a31515">&#39;./nav.component.scss&#39;</span>]
+})
+
+<span style="color: #0000ff">export</span> <span style="color: #0000ff">class</span> NavComponent <span style="color: #0000ff">implements</span> OnInit {
+    <span style="color: #0000ff">constructor</span>(<span style="color: #0000ff">private</span> location: <span style="color: #2b91af">Location</span>) { }
+
+    ngOnInit() { }
+
+    isActive(path: <span style="color: #2b91af">string</span>) {
+        <span style="color: #0000ff">return</span> <span style="color: #0000ff">this</span>.location.path().indexOf(path) &gt; -1;
+    }
+}</pre>
+</p>
+
+<h2>Create the Product Model</h2>
+<p>
+    In the
+    <b>src/app/</b> create a new folder names
+    <b>models</b>.
+</p>
+<p>
+    In the
+    <b>src/app/models/</b> folder create a new file named
+    <b>product.model.ts</b>.
+</p>
+<p>
+    <div class="code-title">
+        src/app/models/product.model.ts
+    </div>
+    <pre class="code"><span style="color: #0000ff">export</span> <span style="color: #0000ff">interface</span> Product {
+    ProductID: <span style="color: #2b91af">string</span>;
+    ProductName: <span style="color: #2b91af">string</span>;
+    Supplier: <span style="color: #2b91af">string</span>;
+    Segment: <span style="color: #2b91af">string</span>;
+    Price: <span style="color: #2b91af">string</span>;
+    CasePrice: <span style="color: #2b91af">string</span>;
+    Brand: <span style="color: #2b91af">string</span>;
+    ProductType: <span style="color: #2b91af">string</span>;
+    Package: <span style="color: #2b91af">string</span>;
+    CommissionGroup: <span style="color: #2b91af">string</span>;
+    SupplierProductNum: <span style="color: #2b91af">string</span>;
+    CaseUPC: <span style="color: #2b91af">string</span>;
+    CarrierUPC: <span style="color: #2b91af">string</span>;
+    UnitUPC: <span style="color: #2b91af">string</span>;
+}</pre>
+</p>
+<p>
+    This defines the data that is coming from the GetProducts and GetProduct API commands.
+</p>
+
+<h2>Transform the GetProducts Data</h2>
+<p>
+    You are using a Material table component to show the product list. To do this you need to transform the data from the GetProducts
+    command, to a form that can be read by the table component.
+</p>
+<p>
+    Edit the
+    <b>src/app/product-list/product-list.component.ts</b> file.
+</p>
+<p>
+    <div class="code-title">
+        src/app/product-list/product-list.component.ts
+    </div>
+    <pre class="code"><span style="color: #0000ff">import</span> { Component, OnInit, ViewChild } from <span style="color: #a31515">&#39;@angular/core&#39;</span>;
+<span style="color: #0000ff">import</span> { ActivatedRoute } from <span style="color: #a31515">&#39;@angular/router&#39;</span>;
+<span style="color: #0000ff">import</span> { MatPaginator, MatTableDataSource } from <span style="color: #a31515">&#39;@angular/material&#39;</span>;
+<span style="color: #0000ff">import</span> { Observable } from <span style="color: #a31515">&#39;rxjs/Observable&#39;</span>;
+
+<span style="color: #0000ff">import</span> { merge } from <span style="color: #a31515">&#39;rxjs/observable/merge&#39;</span>;
+<span style="color: #0000ff">import</span> { of <span style="color: #0000ff">as</span> observableOf } from <span style="color: #a31515">&#39;rxjs/observable/of&#39;</span>;
+<span style="color: #0000ff">import</span> { catchError, map, startWith, switchMap } from <span style="color: #a31515">&#39;rxjs/operators&#39;</span>;
+
+<span style="color: #0000ff">import</span> { EcpService } from <span style="color: #a31515">&quot;../ecp.service&quot;</span>;
+<span style="color: #0000ff">import</span> { Product } from <span style="color: #a31515">&quot;../models/product.model&quot;</span>
+
+<span style="color: #a31515">@Component</span>({
+    selector: <span style="color: #a31515">&#39;app-product-list&#39;</span>,
+    templateUrl: <span style="color: #a31515">&#39;./product-list.component.html&#39;</span>,
+    styleUrls: [<span style="color: #a31515">&#39;./product-list.component.scss&#39;</span>]
+})
+
+<span style="color: #0000ff">export</span> <span style="color: #0000ff">class</span> ProductListComponent <span style="color: #0000ff">implements</span> OnInit {
+    displayedColumns = [<span style="color: #a31515">&#39;ProductID&#39;</span>, <span style="color: #a31515">&#39;ProductName&#39;</span>, <span style="color: #a31515">&#39;Supplier&#39;</span>, <span style="color: #a31515">&#39;Brand&#39;</span>, <span style="color: #a31515">&#39;ProductType&#39;</span>, <span style="color: #a31515">&#39;Package&#39;</span>, <span style="color: #a31515">&#39;CarrierUPC&#39;</span>];
+    dataSource = <span style="color: #0000ff">new</span> MatTableDataSource();
+
+    name = <span style="color: #a31515">&#39;products&#39;</span>;
+    page = +<span style="color: #0000ff">this</span>.route.snapshot.paramMap.get(<span style="color: #a31515">&#39;page&#39;</span>);
+    resultsLength = 0;
+    isLoadingResults = <span style="color: #0000ff">true</span>;
+
+    <span style="color: #a31515">@ViewChild</span>(MatPaginator) paginator: <span style="color: #2b91af">MatPaginator</span>;
+
+    <span style="color: #0000ff">constructor</span>(<span style="color: #0000ff">private</span> ECP:<span style="color: #2b91af">EcpService</span>, <span style="color: #0000ff">private</span> route: <span style="color: #2b91af">ActivatedRoute</span>) { }
+
+    ngOnInit() {
+        <span style="color: #0000ff">this</span>.paginator.pageIndex = <span style="color: #0000ff">this</span>.page;
+
+        merge(<span style="color: #0000ff">this</span>.paginator.page).pipe(startWith({}), switchMap(() =&gt; {
+            <span style="color: #0000ff">this</span>.isLoadingResults = <span style="color: #0000ff">true</span>;
+            <span style="color: #0000ff">this</span>.page = <span style="color: #0000ff">this</span>.paginator.pageIndex;
+
+            <span style="color: #0000ff">return</span> <span style="color: #0000ff">this</span>.ECP!.Records&lt;Product&gt;(<span style="color: #a31515">&#39;[ENCOMPASS_ID]&#39;</span>, <span style="color: #a31515">&#39;GetProducts&#39;</span>, <span style="color: #a31515">`SelectMaxRecords=10&amp;StartRecordCount=</span>${<span style="color: #0000ff">this</span>.paginator.pageIndex * 10}<span style="color: #a31515">`</span>);
+        }), map(data =&gt; {
+            <span style="color: #0000ff">this</span>.isLoadingResults = <span style="color: #0000ff">false</span>;
+            <span style="color: #0000ff">this</span>.resultsLength = data.Export.Table.RecordCount;
+
+            <span style="color: #0000ff">return</span> data.Export.Table.Row;
+        }), catchError(() =&gt; {
+            <span style="color: #0000ff">this</span>.isLoadingResults = <span style="color: #0000ff">false</span>;
+
+            <span style="color: #0000ff">return</span> observableOf([]);
+        })).subscribe(data =&gt; <span style="color: #0000ff">this</span>.dataSource.data = data);
+    }
+}</pre>
+</p>
+<p>
+    A lot is going on here. First we imported
+    <b>ActivatedRoute</b> from
+    <b>@angular/router</b>. Remember when you created a route for
+    <b>/products/:page</b>? The
+    <b>ActivatedRoute</b> module allows you to access the
+    <b>route</b> information. Now you can access the
+    <b>page</b> variable.
+</p>
+<p>
+    Next, the the
+    <b>Observable</b> module with the
+    <b>of</b> and
+    <b>merge</b> methods and the
+    <b>map</b>,
+    <b>switchMap</b>,
+    <b>startWith</b> and
+    <b>catchError</b> operators. These are needed because both the table component and the
+    <b>EcpService</b> are asynchronous.
+</p>
+<p>
+    They you added references to both the
+    <b>EcpService</b> and the
+    <b>Product</b> model you just created.
+</p>
+<p>
+    <b>@ViewChild</b> is how Angular handles partials. Material's table component uses a comon paganator for pagination.
+</p>
+
+<b>Create the View</b>
+<p>
+    The next thing you need to do is, to create the view. This is where the Material table is.
+</p>
+<p>
+    Edit the
+    <b>src/app/product-list/product-list.component.html</b> file.
+</p>
+<p>
+    <div class="code-title">
+        src/app/product-list/product-list.component.html
+    </div>
+    <pre class="code"><span style="color: #8B008B; font-weight: bold">&lt;div</span> <span style="color: #658b00">class=</span><span style="color: #CD5555">&quot;table-container&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+    <span style="color: #8B008B; font-weight: bold">&lt;div</span> <span style="color: #658b00">class=</span><span style="color: #CD5555">&quot;loading-shade&quot;</span> <span style="color: #a61717; background-color: #e3d2d2">*</span><span style="color: #658b00">ngIf=</span><span style="color: #CD5555">&quot;isLoadingResults&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+        <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-spinner</span> <span style="color: #a61717; background-color: #e3d2d2">*</span><span style="color: #658b00">ngIf=</span><span style="color: #CD5555">&quot;isLoadingResults&quot;</span> <span style="color: #658b00">color=</span><span style="color: #CD5555">&quot;accent&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span><span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-spinner&gt;
+    <span style="color: #8B008B; font-weight: bold">&lt;/div&gt;</span>
+    <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-table</span> <span style="color: #a61717; background-color: #e3d2d2">#</span><span style="color: #658b00">table</span> <span style="color: #a61717; background-color: #e3d2d2">[</span><span style="color: #658b00">dataSource</span><span style="color: #a61717; background-color: #e3d2d2">]=&quot;</span><span style="color: #658b00">dataSource</span><span style="color: #a61717; background-color: #e3d2d2">&quot;</span> <span style="color: #658b00">class=</span><span style="color: #CD5555">&quot;products-table&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+        <span style="color: #8B008B; font-weight: bold">&lt;ng</span><span style="color: #658b00">-container</span> <span style="color: #658b00">matColumnDef=</span><span style="color: #CD5555">&quot;ProductID&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+            <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-header-cell</span> <span style="color: #a61717; background-color: #e3d2d2">*</span><span style="color: #658b00">matHeaderCellDef</span> <span style="color: #a61717; background-color: #e3d2d2">[</span><span style="color: #658b00">ngClass</span><span style="color: #a61717; background-color: #e3d2d2">]=&quot;&#39;</span><span style="color: #658b00">fixed-col</span><span style="color: #a61717; background-color: #e3d2d2">&#39;&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>ID<span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-header-cell&gt;
+            <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-cell</span> <span style="color: #a61717; background-color: #e3d2d2">*</span><span style="color: #658b00">matCellDef=</span><span style="color: #CD5555">&quot;let row&quot;</span> <span style="color: #a61717; background-color: #e3d2d2">[</span><span style="color: #658b00">ngClass</span><span style="color: #a61717; background-color: #e3d2d2">]=&quot;&#39;</span><span style="color: #658b00">fixed-col</span><span style="color: #a61717; background-color: #e3d2d2">&#39;&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>{{ row.ProductID }}<span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-cell&gt;
+        <span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/ng-container&gt;
+        <span style="color: #8B008B; font-weight: bold">&lt;ng</span><span style="color: #658b00">-container</span> <span style="color: #658b00">matColumnDef=</span><span style="color: #CD5555">&quot;ProductName&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+            <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-header-cell</span> <span style="color: #a61717; background-color: #e3d2d2">*</span><span style="color: #658b00">matHeaderCellDef</span> <span style="color: #a61717; background-color: #e3d2d2">[</span><span style="color: #658b00">ngClass</span><span style="color: #a61717; background-color: #e3d2d2">]=&quot;&#39;</span><span style="color: #658b00">grow-col</span><span style="color: #a61717; background-color: #e3d2d2">&#39;&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>Name<span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-header-cell&gt;
+            <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-cell</span> <span style="color: #a61717; background-color: #e3d2d2">*</span><span style="color: #658b00">matCellDef=</span><span style="color: #CD5555">&quot;let row&quot;</span> <span style="color: #a61717; background-color: #e3d2d2">[</span><span style="color: #658b00">ngClass</span><span style="color: #a61717; background-color: #e3d2d2">]=&quot;&#39;</span><span style="color: #658b00">grow-col</span><span style="color: #a61717; background-color: #e3d2d2">&#39;&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>{{ row.ProductName }}<span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-cell&gt;
+        <span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/ng-container&gt;
+        <span style="color: #8B008B; font-weight: bold">&lt;ng</span><span style="color: #658b00">-container</span> <span style="color: #658b00">matColumnDef=</span><span style="color: #CD5555">&quot;Supplier&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+            <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-header-cell</span> <span style="color: #a61717; background-color: #e3d2d2">*</span><span style="color: #658b00">matHeaderCellDef</span> <span style="color: #a61717; background-color: #e3d2d2">[</span><span style="color: #658b00">ngClass</span><span style="color: #a61717; background-color: #e3d2d2">]=&quot;&#39;</span><span style="color: #658b00">fixed-col</span><span style="color: #a61717; background-color: #e3d2d2">&#39;&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>Supplier<span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-header-cell&gt;
+            <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-cell</span> <span style="color: #a61717; background-color: #e3d2d2">*</span><span style="color: #658b00">matCellDef=</span><span style="color: #CD5555">&quot;let row&quot;</span> <span style="color: #a61717; background-color: #e3d2d2">[</span><span style="color: #658b00">ngClass</span><span style="color: #a61717; background-color: #e3d2d2">]=&quot;&#39;</span><span style="color: #658b00">fixed-col</span><span style="color: #a61717; background-color: #e3d2d2">&#39;&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>{{ row.Supplier }}<span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-cell&gt;
+        <span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/ng-container&gt;
+        <span style="color: #8B008B; font-weight: bold">&lt;ng</span><span style="color: #658b00">-container</span> <span style="color: #658b00">matColumnDef=</span><span style="color: #CD5555">&quot;Brand&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+            <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-header-cell</span> <span style="color: #a61717; background-color: #e3d2d2">*</span><span style="color: #658b00">matHeaderCellDef</span> <span style="color: #a61717; background-color: #e3d2d2">[</span><span style="color: #658b00">ngClass</span><span style="color: #a61717; background-color: #e3d2d2">]=&quot;&#39;</span><span style="color: #658b00">fixed-col</span><span style="color: #a61717; background-color: #e3d2d2">&#39;&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>Brand<span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-header-cell&gt;
+            <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-cell</span> <span style="color: #a61717; background-color: #e3d2d2">*</span><span style="color: #658b00">matCellDef=</span><span style="color: #CD5555">&quot;let row&quot;</span> <span style="color: #a61717; background-color: #e3d2d2">[</span><span style="color: #658b00">ngClass</span><span style="color: #a61717; background-color: #e3d2d2">]=&quot;&#39;</span><span style="color: #658b00">fixed-col</span><span style="color: #a61717; background-color: #e3d2d2">&#39;&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>{{ row.Brand }}<span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-cell&gt;
+        <span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/ng-container&gt;
+        <span style="color: #8B008B; font-weight: bold">&lt;ng</span><span style="color: #658b00">-container</span> <span style="color: #658b00">matColumnDef=</span><span style="color: #CD5555">&quot;ProductType&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+            <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-header-cell</span> <span style="color: #a61717; background-color: #e3d2d2">*</span><span style="color: #658b00">matHeaderCellDef</span> <span style="color: #a61717; background-color: #e3d2d2">[</span><span style="color: #658b00">ngClass</span><span style="color: #a61717; background-color: #e3d2d2">]=&quot;&#39;</span><span style="color: #658b00">fixed-col</span><span style="color: #a61717; background-color: #e3d2d2">&#39;&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>Type<span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-header-cell&gt;
+            <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-cell</span> <span style="color: #a61717; background-color: #e3d2d2">*</span><span style="color: #658b00">matCellDef=</span><span style="color: #CD5555">&quot;let row&quot;</span> <span style="color: #a61717; background-color: #e3d2d2">[</span><span style="color: #658b00">ngClass</span><span style="color: #a61717; background-color: #e3d2d2">]=&quot;&#39;</span><span style="color: #658b00">fixed-col</span><span style="color: #a61717; background-color: #e3d2d2">&#39;&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>{{ row.ProductType }}<span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-cell&gt;
+        <span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/ng-container&gt;
+        <span style="color: #8B008B; font-weight: bold">&lt;ng</span><span style="color: #658b00">-container</span> <span style="color: #658b00">matColumnDef=</span><span style="color: #CD5555">&quot;Package&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+            <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-header-cell</span> <span style="color: #a61717; background-color: #e3d2d2">*</span><span style="color: #658b00">matHeaderCellDef</span> <span style="color: #a61717; background-color: #e3d2d2">[</span><span style="color: #658b00">ngClass</span><span style="color: #a61717; background-color: #e3d2d2">]=&quot;&#39;</span><span style="color: #658b00">fixed-col</span><span style="color: #a61717; background-color: #e3d2d2">&#39;&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>Package<span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-header-cell&gt;
+            <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-cell</span> <span style="color: #a61717; background-color: #e3d2d2">*</span><span style="color: #658b00">matCellDef=</span><span style="color: #CD5555">&quot;let row&quot;</span> <span style="color: #a61717; background-color: #e3d2d2">[</span><span style="color: #658b00">ngClass</span><span style="color: #a61717; background-color: #e3d2d2">]=&quot;&#39;</span><span style="color: #658b00">fixed-col</span><span style="color: #a61717; background-color: #e3d2d2">&#39;&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>{{ row.Package }}<span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-cell&gt;
+        <span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/ng-container&gt;
+        <span style="color: #8B008B; font-weight: bold">&lt;ng</span><span style="color: #658b00">-container</span> <span style="color: #658b00">matColumnDef=</span><span style="color: #CD5555">&quot;CarrierUPC&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>
+            <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-header-cell</span> <span style="color: #a61717; background-color: #e3d2d2">*</span><span style="color: #658b00">matHeaderCellDef</span> <span style="color: #a61717; background-color: #e3d2d2">[</span><span style="color: #658b00">ngClass</span><span style="color: #a61717; background-color: #e3d2d2">]=&quot;&#39;</span><span style="color: #658b00">fixed-col</span><span style="color: #a61717; background-color: #e3d2d2">&#39;&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>UPC<span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-header-cell&gt;
+            <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-cell</span> <span style="color: #a61717; background-color: #e3d2d2">*</span><span style="color: #658b00">matCellDef=</span><span style="color: #CD5555">&quot;let row&quot;</span> <span style="color: #a61717; background-color: #e3d2d2">[</span><span style="color: #658b00">ngClass</span><span style="color: #a61717; background-color: #e3d2d2">]=&quot;&#39;</span><span style="color: #658b00">fixed-col</span><span style="color: #a61717; background-color: #e3d2d2">&#39;&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span>{{ row.CarrierUPC }}<span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-cell&gt;
+        <span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/ng-container&gt;
+        <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-header-row</span> <span style="color: #a61717; background-color: #e3d2d2">*</span><span style="color: #658b00">matHeaderRowDef=</span><span style="color: #CD5555">&quot;displayedColumns&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span><span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-header-row&gt;
+        <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-row</span> <span style="color: #a61717; background-color: #e3d2d2">*</span><span style="color: #658b00">matRowDef=</span><span style="color: #CD5555">&quot;let row; columns: displayedColumns;&quot;</span> <span style="color: #658b00">routerLink=</span><span style="color: #CD5555">&quot;/products/{{ page }}/{{ row.ProductID }}&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span><span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-row&gt;
+    <span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-table&gt;
+    <span style="color: #8B008B; font-weight: bold">&lt;mat</span><span style="color: #658b00">-paginator</span> <span style="color: #a61717; background-color: #e3d2d2">[</span><span style="color: #658b00">length</span><span style="color: #a61717; background-color: #e3d2d2">]=&quot;</span><span style="color: #658b00">resultsLength</span><span style="color: #a61717; background-color: #e3d2d2">&quot;</span> <span style="color: #a61717; background-color: #e3d2d2">[</span><span style="color: #658b00">pageSize</span><span style="color: #a61717; background-color: #e3d2d2">]=&quot;</span><span style="color: #658b00">10</span><span style="color: #a61717; background-color: #e3d2d2">&quot;</span><span style="color: #8B008B; font-weight: bold">&gt;</span><span style="color: #a61717; background-color: #e3d2d2">&lt;</span>/mat-paginator&gt;
+<span style="color: #8B008B; font-weight: bold">&lt;/div&gt;</span></pre>
+</p>
+<p>
+    This is simply the MAterial table component. You can find further information about this on the
+    <a href="https://material.angular.io/components">Angular Material</a> documentation site.
+</p>
+
+<h2>Define the Style</h2>
+<p>
+    All that's left is to add a bit of style.
+</p>
+<p>
+    Edit the
+    <b>src/app/product-list/product-list.component.scss</b> file.
+</p>
+<p>
+    <div class="code-title">
+        src/app/product-list/product-list.component.scss
+    </div>
+    <pre class="code"><span style="color: #0000ff">@import</span> <span style="color: #a31515">&quot;../../../node_modules/@angular/material/_theming.scss&quot;</span>;
+
+<span style="color: #0000ff">@include</span> mat-core;
+
+<span style="color: #2b91af">.loading-shade</span> {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 219<span style="color: #2b91af">px</span>;
+    background: rgba(255, 255, 255, 0.5);
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+<span style="color: #2b91af">.table-container</span> {
+    <span style="color: #0000ff">@extend</span> <span style="color: #2b91af">.mat-elevation-z6</span>;
+
+    display: flex;
+    flex-direction: column;
+    margin: 20px;
+
+    <span style="color: #2b91af">.products-table</span> {
+        min-height: 539<span style="color: #2b91af">px</span>;
+    }
+
+    <span style="color: #2b91af">.mat-column-select</span> {
+        overflow: visible;
+    }
+
+    <span style="color: #2b91af">.grow-col</span> {
+        flex: 1 2 75<span style="color: #2b91af">%</span>;
+    }
+
+    <span style="color: #2b91af">.fixed-col</span> {
+        flex: 0 0 10<span style="color: #2b91af">%</span>;
+    }
+
+    mat-row {
+        <span style="color: #0000ff">&amp;</span>:hover {
+            background: #efefef;
+        }
+
+        mat-cell {
+            cursor: pointer;
+        }
+    }
+}</pre>
+</p>
+
+<h2>Try it Out</h2>
+<p>
+    You have successfully created your first component. You should be able to see it in action.
+</p>
+<p>
+    In your browser go to
+    <b>http://localhost:4200/products</b>.
+</p>
+
+<p class="note">
+    <span class="next-step">Next Step</span>
+    <br>
+    <br>Let's continue with the
+    <a href="/docs/product-editor/product-detail">Product Detail</a> component.
+</p>
